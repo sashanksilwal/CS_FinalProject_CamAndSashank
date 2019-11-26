@@ -38,52 +38,52 @@ class Germs(Creature):
 class Intro:
     def __init__(self):
         self.cloud = loadImage(path+"/images/cloud.png")
-        self.bground = loadImage(path+"/images/baground_intro1.png")
+        self.bground = loadImage(path+"/images/intro_background.jpeg")
         self.intro = loadImage(path+"/images/intro.png")
         self.play = loadImage(path+"/images/play.png")
+        self.info = loadImage(path+"/images/info.jpg")
         self.i = 0
         self.file = open(path+"/intro.txt","r")
         self.time = 1
         
     def menudisplay(self):
-        image(self.bground,0,0,600,750)
-        image(self.cloud,300,200,300,200)
+        image(self.bground,0,0,game.w, game.h)
+        image(self.cloud,game.w//1.5,game.h//7,400,328)
         # image(self.play,100,210,300,200)
-        image(self.intro,250,350,400,300,800*self.i,0,800*(self.i+1),600)
+        image(self.intro,game.w//1.5,game.h//2,400,380,800*self.i,0,800*(self.i+1),600)
         fill(0)
         textSize(25)
         a = self.file.readline()
         # print(a)
         # self.time = 0
-        if frameCount % 2 ==0:
+        
             # self.time += 1
             # a = self.file.readline()
             # print(a)
-            text(a,350,220)
-        self.i = (self.i+1)%15
+            # text(a,350,220)
+        if frameCount % 3 ==0:
+            self.i = (self.i+1)%15
         # print(mouseX,mouseY)
-        fill(255,0,255)
-        if 100<= mouseX <= 157 and 294<= mouseY <= 312:
-            fill(255,255,255)
-        textSize(25)
-        text("Start",100,310)
-        fill(255,0,255)
-        if 100<= mouseX <= 152 and 363<= mouseY <= 385:
-            fill(255,255,255)
-        textSize(25)
-        text("Quit",100,380)
-        fill(255,0,255)
-        if 100<= mouseX <= 242 and 445<= mouseY <= 465:
-            fill(255,255,255)
-        textSize(25)
-        text("Instructions",100,460)
+        image(self.play,240,160,105,60)
+        image(self.play,240,400,105,60)
+        image(self.play,240,280,105,60)
+        fill(255,255,255)
+        if 240<= mouseX <= 240+115 and 160<= mouseY <= 160+70:
+            image(self.play,240,160,115,70)
+        
+        
+        elif 240<= mouseX <= 240+115 and 280<= mouseY <= 350:
+            image(self.play,240,280,115,70)
+        
+        
+        elif 240<= mouseX <= 240+115 and 400<= mouseY <= 470:
+            image(self.play,240,400,115,70)
+
         
     def instructions(self):
-        image(self.bground,0,0,600,750)
+        image(self.bground,0,0)
         fill(0)
-        rect(100,150,400,450)
-        textSize(25)
-        
+        image(self.info,game.w/8,game.h/8,game.w/1.2, game.h/1.2)
         if 50<= mouseX <= 105 and 635<= mouseY <= 655:
             fill(0)
         else:
@@ -92,7 +92,7 @@ class Intro:
         
         
 intro = Intro()
-game = Game(600,750,585) 
+game = Game(1280,720,585) 
    
 def setup():
     size(game.w, game.h)
@@ -115,7 +115,7 @@ def mouseClicked():
         elif 100<= mouseX <= 152 and 363<= mouseY <= 385:
             pass
         #     game.gamestate = "exit"
-        elif 100<= mouseX <= 242 and 445<= mouseY <= 465:
+        elif 240<= mouseX <= 350 and 400<= mouseY <= 470:
             game.gamestate = "instructions"
             
     elif game.gamestate == "instructions":
