@@ -17,7 +17,7 @@ class Game():
         self.enemies = []
         self.platforms = []
         # inputFile = open(path+"/level"+l,"r")
-        self.game_bground = loadImage(path+"/images/game_bground.png")
+        self.game_bground = loadImage(path+"/images/cloud.png")
         self.antidotes = []
         self.bgImgs = []
         self.germs = []
@@ -33,9 +33,9 @@ class Game():
         
         self.doctor = Doctor(50,50, 40, self.g, "run.png", 82, 100, 6)
         
-        self.platforms.append(Platform(250,500, 50, 20, "cloud.png"))
+        self.platforms.append(Platform(170,420, 100, 20, "cloud.png"))
         self.platforms.append(Platform(500,400, 100, 20, "cloud.png"))
-        self.platforms.append(Platform(750,300, 100, 20, "cloud.png"))
+        self.platforms.append(Platform(750,350, 100, 20, "cloud.png"))
         
         # for line in inputFile:
             # line = line.strip().split(",")
@@ -47,9 +47,10 @@ class Game():
         #         self.g = int(line[2])
     
     def display(self):
-        # image(self.game_bground, 0,0,1024,720)
+        
         if self.gamestate == "play":
             background(0)
+            # image(game.game_bground, 0,0,game.w,game.h)
             for p in self.platforms:
                 p.display()
     
@@ -68,6 +69,7 @@ class Creature:
         self.vx = 0
         self.img = loadImage(path + "/images/" + img)
         self.jmp_img = loadImage(path + "/images/jump.png")
+        self.shoot_img = loadImage(path + "/images/shoot.png")
         self.w = w
         self.h = h
         self.direction = RIGHT
@@ -104,17 +106,31 @@ class Creature:
         stroke(0, 0, 0)
         
         if self.xdirection == RIGHT:
-            if self.vy!=0:
-                image(self.jmp_img, self.x-self.w//2 , self.y -self.h//2, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+            if self.vy !=0:
+                if self.shoot == True:
+                    image(self.shoot_img, self.x-self.w//2 , self.y -self.h//2, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                else:
+                    image(self.jmp_img, self.x-self.w//2 , self.y -self.h//2, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
             else:
-                image(self.img, self.x-self.w//2 , self.y -self.h//2 , self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
+                if self.shoot == True:
+                    image(self.shoot_img, self.x-self.w//2 , self.y -self.h//2, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                else:
+                    image(self.img, self.x-self.w//2 , self.y -self.h//2 , self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
                 
+                                
         elif self.xdirection == LEFT:
-            if self.vy==0:
-                image(self.img, self.x-self.w//2, self.y -self.h//2, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
+            if self.vy !=0:
+                if self.shoot == True:
+                    image(self.shoot_img, self.x -self.w//2, self.y -self.h//2, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                else:
+                    image(self.jmp_img, self.x -self.w//2, self.y -self.h//2, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
             else:
-                image(self.jmp_img, self.x -self.w//2, self.y -self.h//2, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
-                
+                if self.shoot == True:
+                    image(self.shoot_img, self.x-self.w//2, self.y -self.h//2, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
+                else:
+                    image(self.img, self.x-self.w//2, self.y -self.h//2, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
+                    
+                    
                 
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
@@ -169,6 +185,7 @@ class Doctor(Creature):
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
         self.germCnt = 0
         self.antiCnt = 0
+        self.shoot = False
         
     def update(self):
         self.gravity()
@@ -305,6 +322,7 @@ def draw():
         elif game.gamestate == "instructions":
             intro.instructions()
         elif game.gamestate == "play":
+            
             game.display()
                 
 def mouseClicked():
@@ -329,11 +347,16 @@ def keyReleased():
         game.doctor.keyHandler[RIGHT] = False
     elif keyCode == UP:
         game.doctor.keyHandler[UP] = False
-        game.doctor.ydirection = DOWN    
+        game.doctor.ydirection = DOWN   
+        
+    elif game.doctor.shoot == True:
+        game.doctor.shoot = False
     
 def keyPressed():
     #checking is game is paused
-    if keyCode == 80:
+    if keyCode == 32:
+        game.doctor.shoot = True
+    elif keyCode == 80:
         if game.pause:
             game.pause = False
         else:
