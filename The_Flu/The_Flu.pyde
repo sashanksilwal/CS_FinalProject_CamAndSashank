@@ -17,11 +17,20 @@ class Game():
         self.enemies = []
         self.platforms = []
         # inputFile = open(path+"/level"+l,"r")
-        self.game_bground = loadImage(path+"/images/cloud.png")
+        # self.game_bground = loadImage(path+"/images/play_bground.jpg")
+        self.play_bground = loadImage(path+"/images/intro_background.jpeg")
         self.antidotes = []
+            
         self.bgImgs = []
         self.germs = []
         self.platforms = []
+        
+        #adding the antidotes
+        self.antidotes.append(Antidote(300,300,20, "platform.png",5))
+        self.antidotes.append(Antidote(350,300,20, "platform.png",5))
+        self.antidotes.append(Antidote(400,500,20, "platform.png",5))
+        self.antidotes.append(Antidote(350,600,20, "platform.png",5))
+        
         
         #adding the germs
         self.germs.append(Germ(300, 400, 35, self.g, "play.png", 70, 70, 5, 300, 800,800,1000,1))
@@ -29,11 +38,9 @@ class Game():
         self.germs.append(Germ(300, 200, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,0.6))
         self.germs.append(Germ(300, 100, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,2))
         
-        self.antidotes.append(Antidote())
-        
         self.doctor = Doctor(50,50, 40, self.g, "run.png", 82, 100, 6)
         
-        self.platforms.append(Platform(170,420, 100, 20, "cloud.png"))
+        self.platforms.append(Platform(170,420, 200, 40, "cloud.png"))
         self.platforms.append(Platform(500,400, 100, 20, "cloud.png"))
         self.platforms.append(Platform(750,350, 100, 20, "cloud.png"))
         
@@ -49,13 +56,17 @@ class Game():
     def display(self):
         
         if self.gamestate == "play":
-            background(0)
-            # image(game.game_bground, 0,0,game.w,game.h)
+            image(self.play_bground,0,0,game.w, game.h)
+    
             for p in self.platforms:
                 p.display()
     
             for g in self.germs:
                 g.display()
+                
+            for a in self.antidotes:
+                a.display()
+                
             self.doctor.display()
 
 
@@ -217,13 +228,13 @@ class Doctor(Creature):
         
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
-        if frameCount %20 == 0 :
+        if frameCount %40 == 0 :
             self.frame_jump = (self.frame_jump + 1) % 2
 
-        # for s in germs.antidote:
-            # if self.distance(s) <= self.r + s.r:
-            #     g.stars.remove(s)
-            #     self.antiCnt += 1    
+        for s in game.antidotes:
+            if self.distance(s) <= self.r + s.r:
+                game.antidotes.remove(s)
+                self.antiCnt += 1    
 
         for e in game.germs:
             if self.distance(e) <= self.r + e.r:
@@ -232,8 +243,8 @@ class Doctor(Creature):
                     del e
                     self.vy = -2
                     self.germCnt += 1
-            # else:
-            #     game.pause = True
+                else:
+                    game.pause = True
                     
             
                 # else:
@@ -254,13 +265,23 @@ class Platform:
 
     
     def display(self):
-        rect(self.x , self.y, self.w, self.h)
+        # rect(self.x , self.y, self.w, self.h)
         image(self.img, self.x , self.y, self.w, self.h)
         pass
     
 class Antidote:
-    def __init__(self):
-        pass
+    def __init__(self, x, y, r, img,no_frame):
+        self.F = no_frame
+        self.frame = 1
+        self.img = loadImage(path+"/images/"+img)
+        self.x = x
+        self.y = y
+        self.r = r
+    
+    def display(self):
+        image(self.img,self.x,self.y,50,50)
+        self.frame = (self.frame + 1) % self.F
+        # print(self.frame)
     
             
 class Intro:
