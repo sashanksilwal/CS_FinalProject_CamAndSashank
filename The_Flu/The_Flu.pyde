@@ -13,6 +13,7 @@ class Game():
         self.g = g
         self.time = 0
         self.pause = False
+        self.y_shift = 0
         self.level = l
         self.enemies = []
         self.platforms = []
@@ -38,9 +39,13 @@ class Game():
         self.germs.append(Germ(300, 200, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,0.6))
         self.germs.append(Germ(300, 100, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,2))
         
-        self.doctor = Doctor(50,50, 40, self.g, "run.png", 82, 100, 6)
+        self.doctor = Doctor(50,600, 40, self.g, "run.png", 82, 100, 6)
         
-        self.platforms.append(Platform(170,420, 200, 40, "cloud.png"))
+        
+        self.platforms.append(Platform(170,0, 200, 40, "cloud.png"))
+        self.platforms.append(Platform(500,90, 500, 20, "cloud.png"))
+        self.platforms.append(Platform(750,50, 100, 20, "cloud.png"))
+        self.platforms.append(Platform(170,420, 400, 40, "cloud.png"))
         self.platforms.append(Platform(500,400, 100, 20, "cloud.png"))
         self.platforms.append(Platform(750,350, 100, 20, "cloud.png"))
         
@@ -56,8 +61,8 @@ class Game():
     def display(self):
         
         if self.gamestate == "play":
-            image(self.play_bground,0,0,game.w, game.h)
-    
+            # image(self.play_bground,0,0,game.w, game.h)
+            background(0)
             for p in self.platforms:
                 p.display()
     
@@ -68,6 +73,10 @@ class Game():
                 a.display()
                 
             self.doctor.display()
+            
+            fill(255,255,255)
+            textSize(20)
+            text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
 
 
 class Creature:
@@ -119,27 +128,27 @@ class Creature:
         if self.xdirection == RIGHT:
             if self.vy !=0:
                 if self.shoot == True:
-                    image(self.shoot_img, self.x-self.w//2 , self.y -self.h//2, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    image(self.shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                 else:
-                    image(self.jmp_img, self.x-self.w//2 , self.y -self.h//2, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    image(self.jmp_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
             else:
                 if self.shoot == True:
-                    image(self.shoot_img, self.x-self.w//2 , self.y -self.h//2, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    image(self.shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                 else:
-                    image(self.img, self.x-self.w//2 , self.y -self.h//2 , self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
+                    image(self.img, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
                 
                                 
         elif self.xdirection == LEFT:
             if self.vy !=0:
                 if self.shoot == True:
-                    image(self.shoot_img, self.x -self.w//2, self.y -self.h//2, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                    image(self.shoot_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
                 else:
-                    image(self.jmp_img, self.x -self.w//2, self.y -self.h//2, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                    image(self.jmp_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
             else:
                 if self.shoot == True:
-                    image(self.shoot_img, self.x-self.w//2, self.y -self.h//2, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
+                    image(self.shoot_img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
                 else:
-                    image(self.img, self.x-self.w//2, self.y -self.h//2, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
+                    image(self.img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
                     
                     
                 
@@ -187,7 +196,7 @@ class Germ(Creature):
         
     def display(self):
         self.update()
-        image(self.img, self.x , self.y, self.w, self.h)
+        image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
 
         
 class Doctor(Creature):
@@ -223,8 +232,8 @@ class Doctor(Creature):
         self.x += self.vx
         self.y += self.vy
         
-        # if self.x >= game.w//2:
-        #     game.x += self.vx
+        if self.y >= game.h// 2:
+            game.y_shift += self.vy//2
         
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
@@ -237,8 +246,9 @@ class Doctor(Creature):
                 self.antiCnt += 1    
 
         for e in game.germs:
+            
             if self.distance(e) <= self.r + e.r:
-                if self.vy > 0:
+                if self.vy > 0 and self.antiCnt>0:
                     game.germs.remove(e)
                     del e
                     self.vy = -2
@@ -266,7 +276,7 @@ class Platform:
     
     def display(self):
         # rect(self.x , self.y, self.w, self.h)
-        image(self.img, self.x , self.y, self.w, self.h)
+        image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
         pass
     
 class Antidote:
@@ -329,7 +339,7 @@ class Intro:
         
         
 intro = Intro()
-game = Game(1280,720,585,"1") 
+game = Game(1280,720,650,"1") 
    
 def setup():
     size(game.w, game.h)
