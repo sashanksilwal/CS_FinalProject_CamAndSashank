@@ -236,11 +236,11 @@ class Doctor(Creature):
         self.x += self.vx
         self.y += self.vy
         
-        # if self.y >= game.h// 2:
-        # if self.vy == 0:
-        game.y_shift += self.vy1
-        # else:
-        #     game.y_shift += self.vy
+        if self.y >= game.h// 2:
+            if self.vy == 0:
+                game.y_shift += self.vy
+            else:
+                game.y_shift += self.vy
     
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
@@ -266,8 +266,8 @@ class Doctor(Creature):
             # if self.y<self.over:
             #     game.pause = True
             # self.over += -0.09
-            if self.y >= game.h//2:
-                game.y_shift += self.vy
+            # if self.y >= game.h//2:
+                
                 
             print(self.over)
                 # else:
