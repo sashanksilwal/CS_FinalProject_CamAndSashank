@@ -13,41 +13,24 @@ class Game():
         self.g = g
         self.time = 0
         self.pause = False
-        self.y_shift = 0
         self.level = l
         self.enemies = []
         self.platforms = []
         # inputFile = open(path+"/level"+l,"r")
-        # self.game_bground = loadImage(path+"/images/play_bground.jpg")
-        self.play_bground = loadImage(path+"/images/intro_background.jpeg")
-        self.antidotes = []
-            
         self.bgImgs = []
         self.germs = []
         self.platforms = []
         
-        #adding the antidotes
-        self.antidotes.append(Antidote(300,300,20, "platform.png",5))
-        self.antidotes.append(Antidote(350,300,20, "platform.png",5))
-        self.antidotes.append(Antidote(400,500,20, "platform.png",5))
-        self.antidotes.append(Antidote(350,600,20, "platform.png",5))
+        self.germs.append(Germ(200, 400, 35, self.g, "play.png", 70, 70, 5, 200, 800,800,1000,1))
+        self.germs.append(Germ(300, 300, 35, self.g, "play.png", 70, 70, 5, 200, 800,1000,1000,1.5))
+        self.germs.append(Germ(400, 200, 35, self.g, "play.png", 70, 70, 5, 200, 800,400,1000,0.6))
+        self.germs.append(Germ(100, 100, 35, self.g, "play.png", 70, 70, 5, 100, 800,400,1000,2))
         
+        self.doctor = Doctor(50,50, 90, self.g, "run.png", 80, 100, 2)
         
-        #adding the germs
-        self.germs.append(Germ(300, 400, 35, self.g, "play.png", 70, 70, 5, 300, 800,800,1000,1))
-        self.germs.append(Germ(300, 300, 35, self.g, "play.png", 70, 70, 5, 300, 800,1000,1000,1.5))
-        self.germs.append(Germ(300, 200, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,0.6))
-        self.germs.append(Germ(300, 100, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,2))
-        
-        self.doctor = Doctor(50,600, 40, self.g, "run.png", 82, 100, 6)
-        
-        
-        self.platforms.append(Platform(170,0, 200, 40, "cloud.png"))
-        self.platforms.append(Platform(500,90, 500, 20, "cloud.png"))
-        self.platforms.append(Platform(750,50, 100, 20, "cloud.png"))
-        self.platforms.append(Platform(170,420, 400, 40, "cloud.png"))
-        self.platforms.append(Platform(500,400, 100, 20, "cloud.png"))
-        self.platforms.append(Platform(750,350, 100, 20, "cloud.png"))
+        self.platforms.append(Platform(250,600, 100, 30, "cloud.png"))
+        self.platforms.append(Platform(500,500, 100, 20, "cloud.png"))
+        self.platforms.append(Platform(750,300, 100, 20, "cloud.png"))
         
         # for line in inputFile:
             # line = line.strip().split(",")
@@ -61,22 +44,13 @@ class Game():
     def display(self):
         
         if self.gamestate == "play":
-            # image(self.play_bground,0,0,game.w, game.h)
             background(0)
             for p in self.platforms:
                 p.display()
     
             for g in self.germs:
                 g.display()
-                
-            for a in self.antidotes:
-                a.display()
-                
             self.doctor.display()
-            
-            fill(255,255,255)
-            textSize(20)
-            text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
 
 
 class Creature:
@@ -89,13 +63,11 @@ class Creature:
         self.vx = 0
         self.img = loadImage(path + "/images/" + img)
         self.jmp_img = loadImage(path + "/images/jump.png")
-        self.shoot_img = loadImage(path + "/images/shoot.png")
         self.w = w
         self.h = h
         self.direction = RIGHT
         self.slices = slices
         self.frame = 0
-        self.frame_jump = 0
         self.xdirection = RIGHT
         self.ydirection = DOWN
     
@@ -108,14 +80,14 @@ class Creature:
                 self.vy = self.g - (self.y + self.r)
         
         for p in game.platforms:
-            if self.y + self.r <= p.y and self.x+self.r >= p.x and self.x <= p.x+p.w:
+            if self.y + self.r <= p.y and self.x + self.r >= p.x and self.x - self.r <= p.x + p.w:
                 self.g = p.y
                 break
             else:
                 self.g = game.g
         
     def update(self):
-        self.gravity()
+        # self.gravity()
         
         self.y += self.vy
         self.x += self.vx
@@ -124,33 +96,18 @@ class Creature:
         self.update()
         fill(255, 255, 255)
         stroke(0, 0, 0)
+        # image(self.img, self.x , self.y , self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
         
         if self.xdirection == RIGHT:
-            if self.vy !=0:
-                if self.shoot == True:
-                    image(self.shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
-                else:
-                    image(self.jmp_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+            if self.ydirection == UP:
+                image(self.jmp_img, self.x , self.y , self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
             else:
-                if self.shoot == True:
-                    image(self.shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
-                else:
-                    image(self.img, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
-                
-                                
+                image(self.img, self.x , self.y , self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
         elif self.xdirection == LEFT:
-            if self.vy !=0:
-                if self.shoot == True:
-                    image(self.shoot_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
-                else:
-                    image(self.jmp_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+            if self.ydirection == DOWN:
+                image(self.img, self.x, self.y , self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
             else:
-                if self.shoot == True:
-                    image(self.shoot_img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
-                else:
-                    image(self.img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
-                    
-                    
+                image(self.jmp_img, self.x , self.y , self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
                 
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
@@ -190,25 +147,44 @@ class Germ(Creature):
         if frameCount % 5 == 0:
             self.frame = (self.frame + 1) % self.slices
             
-            
         self.y += self.vy
         self.x += self.vx
         
     def display(self):
         self.update()
-        image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
+        image(self.img, self.x , self.y, self.w, self.h)
+        
+        
+        
+class Antidote(Creature):
+    def __init__(self, x, y, r, g, img, w, h, f, value):
+        Creature.__init__(self, x, y, r, g, img, w, h, f)
+        self.value = value
+        
+    def update(self):
+        
+        
+    def display(self): 
+    
+        # rect(self.x , self.y, self.w, self.h)
+        for 
+        image(self.img, self.x , self.y, self.w, self.h)
+        
+        pass
 
         
 class Doctor(Creature):
     def __init__(self, x, y, r, g, img, w, h, F):
         Creature.__init__(self,x, y, r, g, img, w, h, F)
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
+        # self.jumpSound = player.loadFile(path + "sounds/jump.mp3")
+        # self.killSound = player.loadFile(path + "sounds/kill.mp3")
+
         self.germCnt = 0
-        self.antiCnt = 0
-        self.shoot = False
         
     def update(self):
         self.gravity()
+        
         if self.keyHandler[LEFT]:
             self.vx = -5
             self.xdirection = LEFT
@@ -232,34 +208,31 @@ class Doctor(Creature):
         self.x += self.vx
         self.y += self.vy
         
-        if self.y >= game.h// 2:
-            game.y_shift += self.vy//2
+        # if self.x >= game.w//2:
+        #     game.x += self.vx
         
-        if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
+        if frameCount % 5 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
-        if frameCount %40 == 0 :
-            self.frame_jump = (self.frame_jump + 1) % 2
 
-        for s in game.antidotes:
-            if self.distance(s) <= self.r + s.r:
-                game.antidotes.remove(s)
-                self.antiCnt += 1    
+        # for s in g.stars:
+        #     if self.distance(s) <= self.r + s.r:
+        #         g.stars.remove(s)
+        #         self.starSound.rewind()
+        #         self.starSound.play()
+        #         self.germCnt += 1
+                
 
-        for e in game.germs:
-            
-            if self.distance(e) <= self.r + e.r:
-                if self.vy > 0 and self.antiCnt>0:
-                    game.germs.remove(e)
-                    del e
-                    self.vy = -2
-                    self.germCnt += 1
-                else:
-                    game.pause = True
-                    
-            
-                # else:
-                #     g.bgSound.pause()
-                #     g.__init__(1280,720,585)
+        # for e in g.enemies:
+        #     if self.distance(e) <= self.r + e.r:
+        #         if self.vy > 0:
+        #             g.enemies.remove(e)
+        #             del e
+        #             self.killSound.rewind()
+        #             self.killSound.play()
+        #             self.vy = -8
+        #         else:
+        #             g.bgSound.pause()
+        #             g.__init__(1280,720,585)
                 
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
@@ -275,25 +248,11 @@ class Platform:
 
     
     def display(self):
-        # rect(self.x , self.y, self.w, self.h)
-        image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
+        rect(self.x , self.y, self.w, self.h)
+        image(self.img, self.x , self.y, self.w, self.h)
         pass
     
-class Antidote:
-    def __init__(self, x, y, r, img,no_frame):
-        self.F = no_frame
-        self.frame = 1
-        self.img = loadImage(path+"/images/"+img)
-        self.x = x
-        self.y = y
-        self.r = r
-    
-    def display(self):
-        image(self.img,self.x,self.y,50,50)
-        self.frame = (self.frame + 1) % self.F
-        # print(self.frame)
-    
-            
+        
 class Intro:
     def __init__(self):
         self.cloud = loadImage(path+"/images/cloud.png")
@@ -339,7 +298,7 @@ class Intro:
         
         
 intro = Intro()
-game = Game(1280,720,650,"1") 
+game = Game(1280,720,585,"1") 
    
 def setup():
     size(game.w, game.h)
@@ -353,7 +312,6 @@ def draw():
         elif game.gamestate == "instructions":
             intro.instructions()
         elif game.gamestate == "play":
-            
             game.display()
                 
 def mouseClicked():
@@ -374,27 +332,27 @@ def mouseClicked():
 def keyReleased():
     if keyCode == LEFT:
         game.doctor.keyHandler[LEFT] = False
+        
     elif keyCode == RIGHT:
         game.doctor.keyHandler[RIGHT] = False
     elif keyCode == UP:
         game.doctor.keyHandler[UP] = False
-        game.doctor.ydirection = DOWN   
+        game.doctor.ydirection = DOWN
         
-    elif game.doctor.shoot == True:
-        game.doctor.shoot = False
     
 def keyPressed():
-    #checking is game is paused
-    if keyCode == 32:
-        game.doctor.shoot = True
-    elif keyCode == 80:
-        if game.pause:
-            game.pause = False
-        else:
-            game.pause = True
-    elif keyCode == LEFT:
+    # if keyCode == 32:
+    #     pass
+    # elif keyCode == 80:
+    #     if game.pause:
+    #         game.pause = False
+    #         # g.bgSound.play()
+    #     else:
+    #         game.pause = True
+    if keyCode == LEFT:
         game.doctor.keyHandler[LEFT] = True
     elif keyCode == RIGHT:
+        game.doctor.frame = 2
         game.doctor.keyHandler[RIGHT] = True
     elif keyCode == UP:
         game.doctor.keyHandler[UP] = True
@@ -404,3 +362,12 @@ def keyPressed():
         else:
             game.pause = True
             game.bgSound.pause()
+            
+        
+        #     g.bgSound.pause()
+        # g.pauseSound.rewind()
+        # g.pauseSound.play()
+        
+   # game.gamestate = "menu"
+
+    
