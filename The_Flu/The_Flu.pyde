@@ -236,11 +236,11 @@ class Doctor(Creature):
         self.x += self.vx
         self.y += self.vy
         
-        if self.y >= game.h// 2:
-            if self.vy == 0:
-                game.y_shift += self.vy
-            else:
-                game.y_shift += self.vy
+        # if self.y >= game.h // 2:
+        #     if self.vy == 0:
+        #         game.y_shift += self.vy
+        #     else:
+        game.y_shift += -0.3
     
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
@@ -398,10 +398,11 @@ def keyReleased():
     
 def keyPressed():
     #checking is game is paused
-    if keyCode == 32:
+    if keyCode == 32: #checks if space bar 
         game.doctor.shoot = True
         game.doctor.shootsound.rewind()
         game.doctor.shootsound.play()
+        #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
     elif keyCode == 80:
         if game.pause:
             game.pause = False
