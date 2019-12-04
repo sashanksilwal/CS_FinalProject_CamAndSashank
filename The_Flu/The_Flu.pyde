@@ -94,7 +94,7 @@ class Creature:
         self.shoot_img = loadImage(path + "/images/shoot.png")
         self.w = w
         self.h = h
-        self.direction = RIGHT
+        # self.direction = RIGHT
         self.slices = slices
         self.frame = 0
         self.frame_jump = 0
@@ -169,7 +169,7 @@ class Germ(Creature):
         self.w = w
         self.h = h
         self.xdirection = RIGHT
-        self.ydirection = RIGHT
+        self.ydirection = RIGHT # why is this right? 
         
     def update(self):
         # no gravity, only motion -- polymorphism, so we don't call it here (I don't know how we can make this more beautiful)
@@ -200,10 +200,52 @@ class Germ(Creature):
         self.update()
         image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
 
+class Fire(Creature):
+    def __init__(self, x, y, r, g, img, w, h, f):
+        Creature.__init__(self, x, y, r, g, img, w, h, f)
+        self.vx = 0
+        
+        if game.doctor.xdirection == RIGHT:
+            self.direction = RIGHT
+        elif game.doctor.xdirection == LEFT: 
+            self.direction = LEFT
+        
+    def update(self):
+        if self.direction == RIGHT:
+            self.vx = 3
+        elif self.direction == LEFT:
+            self.vx = -3
+            
+        self.x += self.vx
+        game.y_shift += -0.3
+        
+        
+        for e in game.germs:
+            if self.distance(e) <= self.r + e.r:
+                if self.vy > 0 and self.antiCnt>0:
+                    game.germs.remove(e)
+                    del e
+                    self.germCnt += 1
+                    self.remove()
+                else:
+                    Game.pause = True
+        
+    def display(self):
+        self.update()
+        if self.direction == RIGHT:
+            image(self.img, self.x, self.y, self.w, self.h)
+        elif self.direction == LEFT:
+            image(self.img, self.x-self.w, self.y, self.w, self.h, self.x, int(self.y), self.x-self.w, self.h)
+            
+        
+    def distance(self, target):
+        return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5 
+        
+        
         
 class Doctor(Creature):
     def __init__(self, x, y, r, g, img, w, h, F):
-        Creature.__init__(self,x, y, r, g, img, w, h, F)
+        Creature.__init__(self, x, y, r, g, img, w, h, F)
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
         self.shootsound = player.loadFile(path + "/sounds/shoot.mp3")
         self.germCnt = 0
@@ -211,6 +253,8 @@ class Doctor(Creature):
         self.vy1 = -0.3
         self.shoot = False
         self.over = 600
+        self.xdirection = RIGHT
+        self.ydirection = DOWN
         
     def update(self):
         self.gravity()
@@ -403,6 +447,10 @@ def keyPressed():
         game.doctor.shootsound.rewind()
         game.doctor.shootsound.play()
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
+        
+        fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
+        fire.display()
+        
     elif keyCode == 80:
         if game.pause:
             game.pause = False
