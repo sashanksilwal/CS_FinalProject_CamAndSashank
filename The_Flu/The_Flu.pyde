@@ -8,7 +8,7 @@ path=os.getcwd()
 
 class Game():
     def __init__(self, w, h, g, l):
-        self.gamestate= "menu"
+        self.gamestate = "menu"
         self.x = 0
         self.w = w
         self.h = h
@@ -19,9 +19,9 @@ class Game():
         self.level = l
         self.enemies = []
         self.platforms = []
-        inputFile = open(path+"/level"+l+".csv","r")
-        # self.game_bground = loadImage(path+"/images/play_bground.jpg")
-        self.play_bground = loadImage(path+"/images/intro_background.jpeg")
+        inputFile = open(path + "/level" + l + ".csv","r")
+        self.game_bground = loadImage(path+"/images/background.png")
+        self.play_bground = loadImage(path + "/images/intro_background.jpeg")
         self.antidotes = []
             
         self.bgImgs = []
@@ -29,14 +29,14 @@ class Game():
         self.fires = []
         self.platforms = []
         
-        #adding the antidotes
+        # adding the antidotes
         # self.antidotes.append(Antidote(300,300,20, "platform.png",5))
         # self.antidotes.append(Antidote(350,300,20, "platform.png",5))
         # self.antidotes.append(Antidote(400,500,20, "platform.png",5))
         # self.antidotes.append(Antidote(350,600,20, "platform.png",5))
         
         
-        # #adding the germs
+        # adding the germs
         # self.germs.append(Germ(300, 400, 35, self.g, "play.png", 70, 70, 5, 300, 800,800,1000,1))
         # self.germs.append(Germ(300, 300, 35, self.g, "play.png", 70, 70, 5, 300, 800,1000,1000,1.5))
         # self.germs.append(Germ(300, 200, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,0.6))
@@ -357,7 +357,7 @@ class Platform:
         self.y = y
         self.w = w
         self.h = h
-        self.img = loadImage(path+"/images/"+img)
+        self.img = loadImage(path + "/images/" + img)
 
     
     def display(self):
@@ -439,7 +439,6 @@ def draw():
         elif game.gamestate == "instructions":
             intro.instructions()
         elif game.gamestate == "play":
-            
             game.display()
   
 def mouseClicked():
@@ -460,8 +459,10 @@ def mouseClicked():
 def keyReleased():
     if keyCode == LEFT:
         game.doctor.keyHandler[LEFT] = False
+        
     elif keyCode == RIGHT:
         game.doctor.keyHandler[RIGHT] = False
+        
     elif keyCode == UP:
         game.doctor.keyHandler[UP] = False
         game.doctor.ydirection = DOWN   
@@ -482,6 +483,7 @@ def keyPressed():
             game.pause = False
         else:
             game.pause = True
+        
     elif keyCode == LEFT:
         game.doctor.keyHandler[LEFT] = True
     elif keyCode == RIGHT:
