@@ -8,7 +8,8 @@ path=os.getcwd()
 
 class Game():
     def __init__(self, w, h, g, l):
-        self.gamestate = "menu"
+        self.gamestate= "menu"
+        self.shoot_once = True
         self.x = 0
         self.w = w
         self.h = h
@@ -19,9 +20,9 @@ class Game():
         self.level = l
         self.enemies = []
         self.platforms = []
-        inputFile = open(path + "/level" + l + ".csv","r")
-        self.game_bground = loadImage(path+"/images/background.png")
-        self.play_bground = loadImage(path + "/images/intro_background.jpeg")
+        inputFile = open(path+"/level"+l+".csv","r")
+        # self.game_bground = loadImage(path+"/images/play_bground.jpg")
+        self.play_bground = loadImage(path+"/images/intro_background.jpeg")
         self.antidotes = []
             
         self.bgImgs = []
@@ -29,45 +30,27 @@ class Game():
         self.fires = []
         self.platforms = []
         
-        # adding the antidotes
-        # self.antidotes.append(Antidote(300,300,20, "platform.png",5))
-        # self.antidotes.append(Antidote(350,300,20, "platform.png",5))
-        # self.antidotes.append(Antidote(400,500,20, "platform.png",5))
-        # self.antidotes.append(Antidote(350,600,20, "platform.png",5))
-        
-        
-        # adding the germs
-        # self.germs.append(Germ(300, 400, 35, self.g, "play.png", 70, 70, 5, 300, 800,800,1000,1))
-        # self.germs.append(Germ(300, 300, 35, self.g, "play.png", 70, 70, 5, 300, 800,1000,1000,1.5))
-        # self.germs.append(Germ(300, 200, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,0.6))
-        # self.germs.append(Germ(300, 100, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,2))
-        
-        self.doctor = Doctor(50,600, 40, self.g, "run.png", 82, 100, 6)
-        self.checkpoint = Checkpoint(700,250, 40, self.g, "run.png", 82, 100, 6)
-        
-        
-        # self.platforms.append(Platform(170,0, 200, 40, "cloud.png"))
-        # self.platforms.append(Platform(500,90, 500, 20, "cloud.png"))
-        # self.platforms.append(Platform(750,50, 100, 20, "cloud.png"))
-        # self.platforms.append(Platform(170,420, 400, 40, "cloud.png"))
-        # self.platforms.append(Platform(500,00, 400, 20, "cloud.png"))
-        # self.platforms.append(Platform(750,350, 100, 20, "cloud.png"))
+        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6)
+        self.checkpoint = Checkpoint(1000,0, 60, self.g, "checkpoint.png", 120, 120, 6)
         
         for line in inputFile:
             line = line.strip().split(",")
             if line[0] == "platform":
                 self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5]))
             elif line[0] == "germ":
-                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), int(line[13])))
+                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), float(line[13]), int(line[14])))
             elif line[0] == "antidotes":
-                self.antidotes.append(Antidote(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5]))
-                
+                self.antidotes.append(Antidote(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8])))
+            elif line[0] == "speed":
+                self.speed = float(line[1])
         
     def update(self):
         if self.doctor.shoot == True:
-            self.fires.append(Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0))
-            time.sleep(0.01)
-        
+            self.fires.append(Fire(game.doctor.x, game.doctor.y, 15, game.g, "pew.png", 40, 30, 0))
+            # time.sleep(0.01)
+            
+        if self.doctor.shoot == True:
+                self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
     
     def display(self):
         self.update()
@@ -85,20 +68,21 @@ class Game():
                 a.display()
             self.checkpoint.display()   
             self.doctor.display()
-            # if self.doctor.shoot == True:
-            #     self.fire.display()
+            
+            if self.doctor.shoot == True:
+                self.fire.display()
             
             fill(255,255,255)
             textSize(20)
             text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
-            self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
+            # self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
 
-            if self.doctor.shoot == True:
-                self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
-                
+            
+              
+              
             for f in self.fires:
                 f.display()
-            
+                
 
 class Creature:
     def __init__(self, x, y, r, g, img, w, h, slices):
@@ -176,29 +160,26 @@ class Creature:
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
     
-class Antidote:
-    def __init__(self, x, y, r,no_frame,img):
-        self.F = no_frame
+class Antidote(Creature):
+    def __init__(self, x, y, r, g, img, w, h, f):
+        Creature.__init__(self, x, y, r, g, img, w, h, f)
         self.frame = 1
         self.img = loadImage(path+"/images/"+img)
-        self.x = x
-        self.y = y
-        self.r = r
     
     def display(self):
-        image(self.img,self.x,self.y,50,50)
-        self.frame = (self.frame + 1) % self.F
+        image(self.img,self.x-self.w//2,self.y-game.y_shift-self.h//2,self.w, self.h)
+        # self.frame = (self.frame + 1) % self.F
         # print(self.frame)
         
 class Germ(Creature):
-    def __init__(self, x, y, r, g, img, w, h, f, x1, y1, x2, y2, xspeed):
+    def __init__(self, x, y, r, g, img, w, h, f, x1, y1, x2, y2, xspeed,yspeed):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
         self.vx = xspeed
-        self.vy = 0
+        self.vy = yspeed
         self.w = w
         self.h = h
         self.xdirection = RIGHT
@@ -231,7 +212,7 @@ class Germ(Creature):
         
     def display(self):
         self.update()
-        image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
+        image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
 
 class Fire(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
@@ -257,6 +238,7 @@ class Fire(Creature):
         for e in game.germs:
             if self.distance(e) <= self.r + e.r:
                 game.germs.remove(e)
+                game.fires.remove(self)
                 del e
         
         
@@ -264,9 +246,9 @@ class Fire(Creature):
         self.update()
         
         if self.direction == RIGHT:
-            image(self.img, self.x, self.y-game.y_shift+5, self.w, self.h)
+            image(self.img, self.x-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h)
         elif self.direction == LEFT:
-            image(self.img, self.x-self.w, self.y-game.y_shift+5, self.w, self.h)
+            image(self.img, self.x-self.w-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h,200,150,0,0)
             
         
     def distance(self, target):
@@ -315,10 +297,10 @@ class Doctor(Creature):
         #     if self.vy == 0:
         #         game.y_shift += self.vy
         #     else:
-        game.y_shift += -0.3
+        game.y_shift += -game.speed
         if self.y>self.over:
                 game.pause = False
-        self.over += -0.3
+        self.over += -game.speed
     
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
@@ -344,7 +326,9 @@ class Doctor(Creature):
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             # print("WoN")
             global game
+            # if game.level<=2:
             game = Game(1280,720,650,str(int(game.level)+1)) 
+            
             game.gamestate = "play"
             
     def distance(self, target):
@@ -357,9 +341,8 @@ class Platform:
         self.y = y
         self.w = w
         self.h = h
-        self.img = loadImage(path + "/images/" + img)
+        self.img = loadImage(path+"/images/"+img)
 
-    
     def display(self):
         # rect(self.x , self.y, self.w, self.h)
         image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
@@ -369,12 +352,9 @@ class Checkpoint(Creature):
     def __init__(self, x, y, r, g, img, w, h, F):
         Creature.__init__(self, x, y, r, g, img, w, h, F)
         
-    # def update(self):
-    #     if self.distance(Doctor) <= self.r + Doctor.r:
-    #         print("WoN")
-        
     def display(self):
-        image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
+        # if self.y <= 100:
+        image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
 
         
     
@@ -385,6 +365,8 @@ class Intro:
         self.cloud = loadImage(path+"/images/cloud.png")
         self.bground = loadImage(path+"/images/intro_background.jpeg")
         self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
+        # self.game_bground  = loadImage(path+"/images/play_bground.jpg")
+
         self.intro = loadImage(path+"/images/intro.png")
         self.play = loadImage(path+"/images/play.png")
         self.i = 0
@@ -395,14 +377,17 @@ class Intro:
         image(self.cloud,game.w//1.5,game.h//7,400,328)
         # image(self.play,100,210,300,200)
         image(self.intro,game.w//1.5,game.h//2,400,380,800*self.i,0,800*(self.i+1),600)
-        fill(0)
-        textSize(25)
+        
         if frameCount % 3 ==0:
             self.i = (self.i+1)%15
         # print(mouseX,mouseY)
         image(self.play,240,160,105,60)
         image(self.play,240,400,105,60)
         image(self.play,240,280,105,60)
+        fill(0)
+        textSize(15)
+        a="Hey! The evil doctor has taken over.\n It's our final opportunity to save the planet.\n Suit up doc!"
+        text(a,game.w//1.5+40,game.h//7+60)
         fill(255,255,255)
         if 240<= mouseX <= 240+115 and 160<= mouseY <= 160+70:
             image(self.play,240,160,115,70)
@@ -439,6 +424,7 @@ def draw():
         elif game.gamestate == "instructions":
             intro.instructions()
         elif game.gamestate == "play":
+            
             game.display()
   
 def mouseClicked():
@@ -459,21 +445,21 @@ def mouseClicked():
 def keyReleased():
     if keyCode == LEFT:
         game.doctor.keyHandler[LEFT] = False
-        
     elif keyCode == RIGHT:
         game.doctor.keyHandler[RIGHT] = False
-        
     elif keyCode == UP:
         game.doctor.keyHandler[UP] = False
         game.doctor.ydirection = DOWN   
         
     elif game.doctor.shoot == True:
         game.doctor.shoot = False
+
     
 def keyPressed():
     #checking is game is paused
     if keyCode == 32: #checks if space bar 
         game.doctor.shoot = True
+
         game.doctor.shootsound.rewind()
         game.doctor.shootsound.play()
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
@@ -483,7 +469,6 @@ def keyPressed():
             game.pause = False
         else:
             game.pause = True
-        
     elif keyCode == LEFT:
         game.doctor.keyHandler[LEFT] = True
     elif keyCode == RIGHT:
