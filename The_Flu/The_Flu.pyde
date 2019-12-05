@@ -8,7 +8,7 @@ path=os.getcwd()
 
 class Game():
     def __init__(self, w, h, g, l):
-        self.gamestate= "menu"
+        self.gamestate = "menu"
         self.x = 0
         self.w = w
         self.h = h
@@ -318,6 +318,7 @@ class Doctor(Creature):
         #         game.y_shift += self.vy
         #     else:
         game.y_shift += -0.3
+        
         if self.y>self.over:
                 game.pause = True
         print("x=",self.y,"over",self.over)
@@ -341,8 +342,8 @@ class Doctor(Creature):
                     del e
                     self.vy = -2
                     self.germCnt += 1
-                else:
-                    game.pause = True
+                # else:
+                #     game.pause = True
         
             # if self.y<self.over:
             #     game.pause = True
