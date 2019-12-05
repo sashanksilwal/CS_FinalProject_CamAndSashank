@@ -19,7 +19,7 @@ class Game():
         self.level = l
         self.enemies = []
         self.platforms = []
-        # inputFile = open(path+"/level"+l,"r")
+        inputFile = open(path+"/level"+l+".csv","r")
         # self.game_bground = loadImage(path+"/images/play_bground.jpg")
         self.play_bground = loadImage(path+"/images/intro_background.jpeg")
         self.antidotes = []
@@ -29,36 +29,37 @@ class Game():
         self.platforms = []
         
         #adding the antidotes
-        self.antidotes.append(Antidote(300,300,20, "platform.png",5))
-        self.antidotes.append(Antidote(350,300,20, "platform.png",5))
-        self.antidotes.append(Antidote(400,500,20, "platform.png",5))
-        self.antidotes.append(Antidote(350,600,20, "platform.png",5))
+        # self.antidotes.append(Antidote(300,300,20, "platform.png",5))
+        # self.antidotes.append(Antidote(350,300,20, "platform.png",5))
+        # self.antidotes.append(Antidote(400,500,20, "platform.png",5))
+        # self.antidotes.append(Antidote(350,600,20, "platform.png",5))
         
         
-        #adding the germs
-        self.germs.append(Germ(300, 400, 35, self.g, "play.png", 70, 70, 5, 300, 800,800,1000,1))
-        self.germs.append(Germ(300, 300, 35, self.g, "play.png", 70, 70, 5, 300, 800,1000,1000,1.5))
-        self.germs.append(Germ(300, 200, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,0.6))
-        self.germs.append(Germ(300, 100, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,2))
+        # #adding the germs
+        # self.germs.append(Germ(300, 400, 35, self.g, "play.png", 70, 70, 5, 300, 800,800,1000,1))
+        # self.germs.append(Germ(300, 300, 35, self.g, "play.png", 70, 70, 5, 300, 800,1000,1000,1.5))
+        # self.germs.append(Germ(300, 200, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,0.6))
+        # self.germs.append(Germ(300, 100, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,2))
         
         self.doctor = Doctor(50,600, 40, self.g, "run.png", 82, 100, 6)
         
         
-        self.platforms.append(Platform(170,0, 200, 40, "cloud.png"))
-        self.platforms.append(Platform(500,90, 500, 20, "cloud.png"))
-        self.platforms.append(Platform(750,50, 100, 20, "cloud.png"))
-        self.platforms.append(Platform(170,420, 400, 40, "cloud.png"))
-        self.platforms.append(Platform(500,00, 400, 20, "cloud.png"))
-        self.platforms.append(Platform(750,350, 100, 20, "cloud.png"))
+        # self.platforms.append(Platform(170,0, 200, 40, "cloud.png"))
+        # self.platforms.append(Platform(500,90, 500, 20, "cloud.png"))
+        # self.platforms.append(Platform(750,50, 100, 20, "cloud.png"))
+        # self.platforms.append(Platform(170,420, 400, 40, "cloud.png"))
+        # self.platforms.append(Platform(500,00, 400, 20, "cloud.png"))
+        # self.platforms.append(Platform(750,350, 100, 20, "cloud.png"))
         
-        # for line in inputFile:
-            # line = line.strip().split(",")
-            # if line[0] == "platform":
-            #     self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5]))
-        #     elif line[0] == "germ":
-        #         self.enemies.append(Germ(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5], int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10])))
-        #     elif line[0] == "ground":
-        #         self.g = int(line[2])
+        for line in inputFile:
+            line = line.strip().split(",")
+            if line[0] == "platform":
+                self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5]))
+            elif line[0] == "germ":
+                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), int(line[13])))
+            elif line[0] == "antidotes":
+                self.antidotes.append(Antidote(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5]))
+                
         
         
         
@@ -168,7 +169,7 @@ class Creature:
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
     
 class Antidote:
-    def __init__(self, x, y, r, img,no_frame):
+    def __init__(self, x, y, r,no_frame,img):
         self.F = no_frame
         self.frame = 1
         self.img = loadImage(path+"/images/"+img)
