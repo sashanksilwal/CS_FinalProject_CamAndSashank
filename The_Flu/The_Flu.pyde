@@ -7,7 +7,7 @@ path=os.getcwd()
 
 
 class Game():
-    def __init__(self,w,h,g,l):
+    def __init__(self, w, h, g, l):
         self.gamestate= "menu"
         self.x = 0
         self.w = w
@@ -59,6 +59,9 @@ class Game():
         #         self.enemies.append(Germ(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5], int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10])))
         #     elif line[0] == "ground":
         #         self.g = int(line[2])
+        
+        
+        
     
     def display(self):
         
@@ -75,10 +78,16 @@ class Game():
                 a.display()
                 
             self.doctor.display()
+            # if self.doctor.shoot == True:
+            #     self.fire.display()
             
             fill(255,255,255)
             textSize(20)
             text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
+            
+            if self.doctor.shoot == True:
+                fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
+                fire.display()
 
 
 class Creature:
@@ -157,6 +166,20 @@ class Creature:
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
     
+class Antidote:
+    def __init__(self, x, y, r, img,no_frame):
+        self.F = no_frame
+        self.frame = 1
+        self.img = loadImage(path+"/images/"+img)
+        self.x = x
+        self.y = y
+        self.r = r
+    
+    def display(self):
+        image(self.img,self.x,self.y,50,50)
+        self.frame = (self.frame + 1) % self.F
+        # print(self.frame)
+        
 class Germ(Creature):
     def __init__(self, x, y, r, g, img, w, h, f, x1, y1, x2, y2, xspeed):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
@@ -336,19 +359,7 @@ class Platform:
         image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
         pass
     
-class Antidote:
-    def __init__(self, x, y, r, img,no_frame):
-        self.F = no_frame
-        self.frame = 1
-        self.img = loadImage(path+"/images/"+img)
-        self.x = x
-        self.y = y
-        self.r = r
-    
-    def display(self):
-        image(self.img,self.x,self.y,50,50)
-        self.frame = (self.frame + 1) % self.F
-        # print(self.frame)
+
     
             
 class Intro:
@@ -447,9 +458,6 @@ def keyPressed():
         game.doctor.shootsound.rewind()
         game.doctor.shootsound.play()
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
-        
-        fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
-        fire.display()
         
     elif keyCode == 80:
         if game.pause:
