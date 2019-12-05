@@ -26,6 +26,7 @@ class Game():
             
         self.bgImgs = []
         self.germs = []
+        self.fires = []
         self.platforms = []
         
         #adding the antidotes
@@ -61,10 +62,14 @@ class Game():
                 self.antidotes.append(Antidote(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5]))
                 
         
-        
+    def update(self):
+        if self.doctor.shoot == True:
+            self.fires.append(Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0))
+            time.sleep(0.01)
         
     
     def display(self):
+        self.update()
         
         if self.gamestate == "play":
             # image(self.play_bground,0,0,game.w, game.h)
@@ -90,7 +95,8 @@ class Game():
             if self.doctor.shoot == True:
                 self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
                 
-
+            for f in self.fires:
+                f.display()
 
 class Creature:
     def __init__(self, x, y, r, g, img, w, h, slices):
@@ -228,11 +234,12 @@ class Germ(Creature):
 class Fire(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
-        # self.vx = 0
+        
         if game.doctor.xdirection == RIGHT:
             self.direction = RIGHT
         elif game.doctor.xdirection == LEFT: 
             self.direction = LEFT
+            
         if self.direction == RIGHT:
             self.vx = 3
         elif self.direction == LEFT:
@@ -241,6 +248,7 @@ class Fire(Creature):
         
     def update(self):    
         self.x += self.vx
+        
         # game.y_shift += -0.3
         
         
@@ -256,6 +264,7 @@ class Fire(Creature):
         
     def display(self):
         self.update()
+        
         if self.direction == RIGHT:
             image(self.img, self.x, self.y-game.y_shift+5, self.w, self.h)
         elif self.direction == LEFT:
