@@ -84,10 +84,11 @@ class Game():
             fill(255,255,255)
             textSize(20)
             text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
-            
+            self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
+
             if self.doctor.shoot == True:
-                fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
-                fire.display()
+                self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
+                
 
 
 class Creature:
@@ -226,39 +227,38 @@ class Germ(Creature):
 class Fire(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
-        self.vx = 0
-        
+        # self.vx = 0
         if game.doctor.xdirection == RIGHT:
             self.direction = RIGHT
         elif game.doctor.xdirection == LEFT: 
             self.direction = LEFT
-        
-    def update(self):
         if self.direction == RIGHT:
             self.vx = 3
         elif self.direction == LEFT:
             self.vx = -3
-            
+        
+        
+    def update(self):    
         self.x += self.vx
-        game.y_shift += -0.3
+        # game.y_shift += -0.3
         
         
-        for e in game.germs:
-            if self.distance(e) <= self.r + e.r:
-                if self.vy > 0 and self.antiCnt>0:
-                    game.germs.remove(e)
-                    del e
-                    self.germCnt += 1
-                    self.remove()
-                else:
-                    Game.pause = True
+        # for e in game.germs:
+        #     if self.distance(e) <= self.r + e.r:
+        #         if self.vy > 0 and self.antiCnt>0:
+        #             game.germs.remove(e)
+        #             del e
+        #             self.germCnt += 1
+        #             self.remove()
+        #         else:
+        #             Game.pause = True
         
     def display(self):
         self.update()
         if self.direction == RIGHT:
-            image(self.img, self.x, self.y, self.w, self.h)
+            image(self.img, self.x, self.y-game.y_shift+5, self.w, self.h)
         elif self.direction == LEFT:
-            image(self.img, self.x-self.w, self.y, self.w, self.h, self.x, int(self.y), self.x-self.w, self.h)
+            image(self.img, self.x-self.w, self.y-game.y_shift+5, self.w, self.h)
             
         
     def distance(self, target):
@@ -275,7 +275,7 @@ class Doctor(Creature):
         self.antiCnt = 0
         self.vy1 = -0.3
         self.shoot = False
-        self.over = 600
+        self.over = 645
         self.xdirection = RIGHT
         self.ydirection = DOWN
         
@@ -308,6 +308,10 @@ class Doctor(Creature):
         #         game.y_shift += self.vy
         #     else:
         game.y_shift += -0.3
+        if self.y>self.over:
+                game.pause = True
+        print("x=",self.y,"over",self.over)
+        self.over += -0.3
     
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
@@ -328,7 +332,7 @@ class Doctor(Creature):
                     self.vy = -2
                     self.germCnt += 1
                 else:
-                    Game.pause = True
+                    game.pause = True
         
             # if self.y<self.over:
             #     game.pause = True
@@ -423,7 +427,7 @@ def draw():
         elif game.gamestate == "play":
             
             game.display()
-                
+  
 def mouseClicked():
     if game.gamestate == "menu":
         if 240<= mouseX <= 350 and 160<= mouseY <= 160+70:
