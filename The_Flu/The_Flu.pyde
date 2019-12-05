@@ -8,7 +8,7 @@ path=os.getcwd()
 
 class Game():
     def __init__(self, w, h, g, l):
-        self.gamestate = "menu"
+        self.gamestate= "menu"
         self.x = 0
         self.w = w
         self.h = h
@@ -43,6 +43,7 @@ class Game():
         # self.germs.append(Germ(300, 100, 35, self.g, "play.png", 70, 70, 5, 300, 800,400,1000,2))
         
         self.doctor = Doctor(50,600, 40, self.g, "run.png", 82, 100, 6)
+        self.checkpoint = Checkpoint(700,250, 40, self.g, "run.png", 82, 100, 6)
         
         
         # self.platforms.append(Platform(170,0, 200, 40, "cloud.png"))
@@ -82,7 +83,7 @@ class Game():
                 
             for a in self.antidotes:
                 a.display()
-                
+            self.checkpoint.display()   
             self.doctor.display()
             # if self.doctor.shoot == True:
             #     self.fire.display()
@@ -97,6 +98,7 @@ class Game():
                 
             for f in self.fires:
                 f.display()
+            
 
 class Creature:
     def __init__(self, x, y, r, g, img, w, h, slices):
@@ -252,15 +254,11 @@ class Fire(Creature):
         # game.y_shift += -0.3
         
         
-        # for e in game.germs:
-        #     if self.distance(e) <= self.r + e.r:
-        #         if self.vy > 0 and self.antiCnt>0:
-        #             game.germs.remove(e)
-        #             del e
-        #             self.germCnt += 1
-        #             self.remove()
-        #         else:
-        #             Game.pause = True
+        for e in game.germs:
+            if self.distance(e) <= self.r + e.r:
+                game.germs.remove(e)
+                del e
+        
         
     def display(self):
         self.update()
@@ -318,10 +316,8 @@ class Doctor(Creature):
         #         game.y_shift += self.vy
         #     else:
         game.y_shift += -0.3
-        
         if self.y>self.over:
-                game.pause = True
-        print("x=",self.y,"over",self.over)
+                game.pause = False
         self.over += -0.3
     
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
@@ -342,19 +338,14 @@ class Doctor(Creature):
                     del e
                     self.vy = -2
                     self.germCnt += 1
-                # else:
-                #     game.pause = True
-        
-            # if self.y<self.over:
-            #     game.pause = True
-            # self.over += -0.09
-            # if self.y >= game.h//2:
-                
-                
-            print(self.over)
-                # else:
-                #     g.bgSound.pause()
-                #     g.__init__(1280,720,585)
+                else:
+                    game.pause = False
+                    
+        if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
+            # print("WoN")
+            global game
+            game = Game(1280,720,650,str(int(game.level)+1)) 
+            game.gamestate = "play"
             
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
@@ -374,7 +365,19 @@ class Platform:
         image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
         pass
     
+class Checkpoint(Creature):
+    def __init__(self, x, y, r, g, img, w, h, F):
+        Creature.__init__(self, x, y, r, g, img, w, h, F)
+        
+    # def update(self):
+    #     if self.distance(Doctor) <= self.r + Doctor.r:
+    #         print("WoN")
+        
+    def display(self):
+        image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
 
+        
+    
     
             
 class Intro:
