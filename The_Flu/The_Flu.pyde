@@ -22,7 +22,7 @@ class Game():
         self.platforms = []
         inputFile = open(path+"/level"+l+".csv","r")
         # self.game_bground = loadImage(path+"/images/play_bground.jpg")
-        self.play_bground = loadImage(path+"/images/intro_background.jpeg")
+        self.play_bground = loadImage(path+"/images/play_bground.png")
         self.antidotes = []
             
         self.bgImgs = []
@@ -31,12 +31,12 @@ class Game():
         self.platforms = []
         
         self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6)
-        self.checkpoint = Checkpoint(1000,0, 60, self.g, "checkpoint.png", 120, 120, 6)
+        self.checkpoint = Checkpoint(1000,-155, 60, self.g, "checkpoint.png", 120, 120, 6)
         
         for line in inputFile:
             line = line.strip().split(",")
             if line[0] == "platform":
-                self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5]))
+                self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5],int(line[6])))
             elif line[0] == "germ":
                 self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), float(line[13]), int(line[14])))
             elif line[0] == "antidotes":
@@ -203,7 +203,7 @@ class Germ(Creature):
             self.ydirection = UP
             self.vy *= -1
         
-        if frameCount % 5 == 0:
+        if frameCount % 2 == 0:
             self.frame = (self.frame + 1) % self.slices
             
             
@@ -212,8 +212,11 @@ class Germ(Creature):
         
     def display(self):
         self.update()
-        image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
-
+        # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
+        image(self.img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
+        # image(self.img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame+1) * 500, 0, (self.frame +1) * 500, 500)
+        
+        
 class Fire(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
@@ -261,6 +264,7 @@ class Doctor(Creature):
         Creature.__init__(self, x, y, r, g, img, w, h, F)
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
         self.shootsound = player.loadFile(path + "/sounds/shoot.mp3")
+        self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
         self.germCnt = 0
         self.antiCnt = 0
         self.vy1 = -0.3
@@ -325,28 +329,40 @@ class Doctor(Creature):
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             # print("WoN")
+            # delay(3000)
+            image(self.inst_bground,0,0)
             global game
             # if game.level<=2:
+            
+            clear()
             game = Game(1280,720,650,str(int(game.level)+1)) 
             
             game.gamestate = "play"
-            
+                
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
         
 
 class Platform:
-    def __init__(self,x,y, w, h, img):
+    def __init__(self,x,y, w, h, img,slice):
         self.x = x
         self.y = y
         self.w = w
         self.h = h
         self.img = loadImage(path+"/images/"+img)
+        self.frame = 0
+        self.slice = slice
+        
+    def update(self):
+        if frameCount % 5 ==0:
+            self.frame = (self.frame+1)%self.slice
+        
 
     def display(self):
+        self.update()
         # rect(self.x , self.y, self.w, self.h)
-        image(self.img, self.x , self.y-game.y_shift, self.w, self.h)
-        pass
+        image(self.img, self.x , self.y-game.y_shift, self.w, self.h,self.frame * 1200, 350, (self.frame+1) * 1200, 960)
+
     
 class Checkpoint(Creature):
     def __init__(self, x, y, r, g, img, w, h, F):
@@ -357,7 +373,15 @@ class Checkpoint(Creature):
         image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
 
         
-    
+# class LevelChange():
+#     def __init__(self):
+#         self.intro = loadImage(path+"/images/instructions_bground.jpeg")
+#         image(self.intro,0,0)
+#         self.display()
+        
+#     def display(self):
+        
+#         time.sleep(5)    
     
             
 class Intro:
@@ -366,7 +390,6 @@ class Intro:
         self.bground = loadImage(path+"/images/intro_background.jpeg")
         self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
         # self.game_bground  = loadImage(path+"/images/play_bground.jpg")
-
         self.intro = loadImage(path+"/images/intro.png")
         self.play = loadImage(path+"/images/play.png")
         self.i = 0
