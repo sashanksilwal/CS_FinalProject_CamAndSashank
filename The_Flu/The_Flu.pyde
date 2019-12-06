@@ -7,7 +7,7 @@ path=os.getcwd()
 
 
 class Game():
-    def __init__(self, w, h, g, l):
+    def __init__(self, w, h, g, l,lives):
         self.gamestate= "menu"
         self.shoot_once = True
         self.x = 0
@@ -30,7 +30,7 @@ class Game():
         self.fires = []
         self.platforms = []
         
-        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6)
+        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives)
         self.checkpoint = Checkpoint(1000,-155, 60, self.g, "checkpoint.png", 120, 120, 6)
         
         for line in inputFile:
@@ -45,8 +45,11 @@ class Game():
                 self.speed = float(line[1])
         
     def update(self):
-        # if self.doctor.shoot == True:
-        self.fires.append(Fire(game.doctor.x, game.doctor.y, 15, game.g, "pew.png", 40, 30, 0))
+        if self.doctor.antiCnt>0:
+            self.fires.append(Fire(game.doctor.x, game.doctor.y, 15, game.g, "pew.png", 40, 30, 0))
+            self.doctor.antiCnt -= 1
+            game.doctor.shootsound.rewind()
+            game.doctor.shootsound.play()
             # time.sleep(0.01)
             
         # if self.doctor.shoot == True:
@@ -75,6 +78,7 @@ class Game():
             fill(255,255,255)
             textSize(20)
             text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
+            text("Lives Remaining: " + str(self.doctor.lives), 1000, 90)
             # self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
 
             
@@ -234,6 +238,8 @@ class Fire(Creature):
         
     def update(self):    
         self.x += self.vx
+        if self.x<0 or self.x>game.w:
+            game.fires.remove(self)
         
         # game.y_shift += -0.3
         
@@ -260,13 +266,14 @@ class Fire(Creature):
         
         
 class Doctor(Creature):
-    def __init__(self, x, y, r, g, img, w, h, F):
+    def __init__(self, x, y, r, g, img, w, h, F,lives):
         Creature.__init__(self, x, y, r, g, img, w, h, F)
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
         self.shootsound = player.loadFile(path + "/sounds/shoot.mp3")
         self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
         self.germCnt = 0
-        self.antiCnt = 0
+        self.antiCnt = 5
+        self.lives = lives
         self.vy1 = -0.3
         self.shoot = False
         self.over = 645
@@ -325,17 +332,24 @@ class Doctor(Creature):
                     self.vy = -2
                     self.germCnt += 1
                 else:
-                    game.pause = False
+                    if self.lives > 0:
+                        
+                        game = Game(1280,720,650,str(int(game.level)),self.lives-1) 
+                        game.gamestate = "play"
+                    else:
+                        game.gamestate = "over"
+                        text("Game Over",500,400)
+                        text("Press anywhere to restart the game.",500,440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             # print("WoN")
             # delay(3000)
             image(self.inst_bground,0,0)
             global game
+        
             # if game.level<=2:
             
-            clear()
-            game = Game(1280,720,650,str(int(game.level)+1)) 
+            game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives) 
             
             game.gamestate = "play"
                 
@@ -433,7 +447,7 @@ class Intro:
         
         
 intro = Intro()
-game = Game(1280,720,650,"1") 
+game = Game(1280,720,650,"1",3) 
    
 def setup():
     size(game.w, game.h)
@@ -455,15 +469,19 @@ def mouseClicked():
         if 240<= mouseX <= 350 and 160<= mouseY <= 160+70:
             game.gamestate = "play"
 
-        elif 100<= mouseX <= 152 and 363<= mouseY <= 385:
-            pass
-        #     game.gamestate = "exit"
+        elif 240<= mouseX <= 350 and 280<= mouseY <= 350:
+             exit()
         elif 240<= mouseX <= 350 and 400<= mouseY <= 470:
             game.gamestate = "instructions"
             
     elif game.gamestate == "instructions":
         if 50<= mouseX <= 105 and 635<= mouseY <= 655:
             game.gamestate = "menu"
+            
+    elif game.gamestate == "over":
+        global game
+        game = Game(1280,720,650,"1",3) 
+        
         
 def keyReleased():
     if keyCode == LEFT:
@@ -485,8 +503,7 @@ def keyPressed():
     #checking is game is paused
     if keyCode == 32: #checks if space bar 
         game.update()
-        game.doctor.shootsound.rewind()
-        game.doctor.shootsound.play()
+        
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
         
     elif keyCode == 80:
