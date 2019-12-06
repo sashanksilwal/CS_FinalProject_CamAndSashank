@@ -45,15 +45,15 @@ class Game():
                 self.speed = float(line[1])
         
     def update(self):
-        if self.doctor.shoot == True:
-            self.fires.append(Fire(game.doctor.x, game.doctor.y, 15, game.g, "pew.png", 40, 30, 0))
+        # if self.doctor.shoot == True:
+        self.fires.append(Fire(game.doctor.x, game.doctor.y, 15, game.g, "pew.png", 40, 30, 0))
             # time.sleep(0.01)
             
-        if self.doctor.shoot == True:
-                self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
+        # if self.doctor.shoot == True:
+        #         self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
     
     def display(self):
-        self.update()
+        
         
         if self.gamestate == "play":
             # image(self.play_bground,0,0,game.w, game.h)
@@ -474,13 +474,21 @@ def keyReleased():
         game.doctor.keyHandler[UP] = False
         game.doctor.ydirection = DOWN   
         
+<<<<<<< HEAD
     elif game.doctor.shoot == True:
         game.doctor.shoot = False
+=======
+    # elif game.doctor.shoot == True:
+    #     game.doctor.shoot = False
+
+    # elif  keyCode == 32 and game.doctor.shoot:
+    #     game.doctor.shoot = False
+        
+>>>>>>> f48a8b93ab03a73e46464cdaecbc2560b584c2b9
     
     
     if keyCode == 32: #checks if space bar 
-        game.doctor.shoot = True
-
+        game.update()
         game.doctor.shootsound.rewind()
         game.doctor.shootsound.play()
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
