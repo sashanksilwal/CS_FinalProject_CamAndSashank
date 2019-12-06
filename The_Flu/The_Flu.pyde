@@ -474,37 +474,22 @@ def keyReleased():
         game.doctor.keyHandler[UP] = False
         game.doctor.ydirection = DOWN   
         
-<<<<<<< HEAD
-    elif game.doctor.shoot == True:
-        game.doctor.shoot = False
-=======
     # elif game.doctor.shoot == True:
     #     game.doctor.shoot = False
 
     # elif  keyCode == 32 and game.doctor.shoot:
     #     game.doctor.shoot = False
         
->>>>>>> f48a8b93ab03a73e46464cdaecbc2560b584c2b9
     
-    
+def keyPressed():
+    #checking is game is paused
     if keyCode == 32: #checks if space bar 
         game.update()
         game.doctor.shootsound.rewind()
         game.doctor.shootsound.play()
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
         
-    
-    
-def keyPressed():
-    #checking is game is paused
-    # if keyCode == 32: #checks if space bar 
-    #     game.doctor.shoot = True
-
-    #     game.doctor.shootsound.rewind()
-    #     game.doctor.shootsound.play()
-    #     #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
-        
-    if keyCode == 80:
+    elif keyCode == 80:
         if game.pause:
             game.pause = False
         else:
