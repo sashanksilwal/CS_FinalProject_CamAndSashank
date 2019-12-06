@@ -476,10 +476,8 @@ def keyReleased():
         
     elif game.doctor.shoot == True:
         game.doctor.shoot = False
-
     
-def keyPressed():
-    #checking is game is paused
+    
     if keyCode == 32: #checks if space bar 
         game.doctor.shoot = True
 
@@ -487,7 +485,18 @@ def keyPressed():
         game.doctor.shootsound.play()
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
         
-    elif keyCode == 80:
+    
+    
+def keyPressed():
+    #checking is game is paused
+    # if keyCode == 32: #checks if space bar 
+    #     game.doctor.shoot = True
+
+    #     game.doctor.shootsound.rewind()
+    #     game.doctor.shootsound.play()
+    #     #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
+        
+    if keyCode == 80:
         if game.pause:
             game.pause = False
         else:
