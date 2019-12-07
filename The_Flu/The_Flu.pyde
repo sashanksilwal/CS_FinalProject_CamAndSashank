@@ -1,14 +1,12 @@
 add_library('minim')
 import os, time, random
-
 player = Minim(this)
-
 path=os.getcwd()
 
 
 class Game():
-    def __init__(self, w, h, g, l,lives):
-        self.gamestate= "menu"
+    def __init__(self, w, h, g, l, lives):
+        self.gamestate = "menu"
         self.shoot_once = True
         self.x = 0
         self.w = w
@@ -20,18 +18,19 @@ class Game():
         self.level = l
         self.enemies = []
         self.platforms = []
-        inputFile = open(path+"/level"+l+".csv","r")
+        inputFile = open(path + "/level" + l + ".csv", "r")
         # self.game_bground = loadImage(path+"/images/play_bground.jpg")
-        self.play_bground = loadImage(path+"/images/play_bground.png")
+        self.play_bground = loadImage(path + "/images/play_bground.png")
+        
         self.antidotes = []
-            
         self.bgImgs = []
         self.germs = []
         self.fires = []
         self.platforms = []
         
-        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives)
-        self.checkpoint = Checkpoint(1000,-155, 60, self.g, "checkpoint.png", 120, 120, 6)
+        self.doctor = Doctor(150, 500, 40, self.g, "run.png", 82, 100, 6, lives)
+        self.checkpoint = Checkpoint(1000, -1055, 60, self.g, "checkpoint.png", 120, 120, 6)
+        self.newlevel = False
         
         for line in inputFile:
             line = line.strip().split(",")
@@ -48,15 +47,18 @@ class Game():
         if self.doctor.antiCnt>0:
             self.fires.append(Fire(game.doctor.x, game.doctor.y, 15, game.g, "pew.png", 40, 30, 0))
             self.doctor.antiCnt -= 1
-            game.doctor.shootsound.rewind()
-            game.doctor.shootsound.play()
+            self.doctor.shootsound.rewind()
+            self.doctor.shootsound.play()
             # time.sleep(0.01)
             
         # if self.doctor.shoot == True:
         #         self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
+            
     
     def display(self):
-        
+        if self.doctor.distance(self.checkpoint) <= self.doctor.r + self.checkpoint.r:
+            self.newlevel = True
+            return
         
         if self.gamestate == "play":
             # image(self.play_bground,0,0,game.w, game.h)
@@ -80,9 +82,6 @@ class Game():
             text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
             text("Lives Remaining: " + str(self.doctor.lives), 1000, 90)
             # self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
-
-            
-              
               
             for f in self.fires:
                 f.display()
@@ -168,10 +167,10 @@ class Antidote(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
         self.frame = 1
-        self.img = loadImage(path+"/images/"+img)
+        self.img = loadImage(path + "/images/" + img)
     
     def display(self):
-        image(self.img,self.x-self.w//2,self.y-game.y_shift-self.h//2,self.w, self.h)
+        image(self.img, self.x - self.w//2, self.y - game.y_shift - self.h//2, self.w, self.h)
         # self.frame = (self.frame + 1) % self.F
         # print(self.frame)
         
@@ -217,7 +216,7 @@ class Germ(Creature):
     def display(self):
         self.update()
         # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
-        image(self.img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
+        image(self.img, self.x - self.w//2, self.y - self.h//2 - game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
         # image(self.img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame+1) * 500, 0, (self.frame +1) * 500, 500)
         
         
@@ -309,6 +308,7 @@ class Doctor(Creature):
         #         game.y_shift += self.vy
         #     else:
         game.y_shift += -game.speed
+        
         if self.y>self.over:
                 game.pause = False
         self.over += -game.speed
@@ -324,7 +324,6 @@ class Doctor(Creature):
                 self.antiCnt += 1    
 
         for e in game.germs:
-            
             if self.distance(e) <= self.r + e.r:
                 if self.vy > 0 and self.antiCnt>0:
                     game.germs.remove(e)
@@ -338,27 +337,27 @@ class Doctor(Creature):
                         game.gamestate = "play"
                     else:
                         game.gamestate = "over"
-                        text("Game Over",500,400)
-                        text("Press anywhere to restart the game.",500,440)
+                        text("Game Over", 500, 400)
+                        text("Press anywhere to restart the game.", 500, 440)
                     
-        if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
-            # print("WoN")
-            # delay(3000)
-            image(self.inst_bground,0,0)
-            global game
-        
-            # if game.level<=2:
+        # if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
+        #     game.newlevel = True
+        #     # print("WoN")
+        #     # delay(3000)
+        #     image(self.inst_bground,0,0)
+        #     # global game
+        #     # if game.level<=2:
             
-            game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives) 
+        #     game = Game(1280, 720, 650, str(int(game.level) + 1), game.doctor.lives) 
             
-            game.gamestate = "play"
+        #     game.gamestate = "play"
                 
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
         
 
 class Platform:
-    def __init__(self,x,y, w, h, img,slice):
+    def __init__(self, x, y, w, h, img, slice):
         self.x = x
         self.y = y
         self.w = w
@@ -423,9 +422,10 @@ class Intro:
         image(self.play,240,280,105,60)
         fill(0)
         textSize(15)
-        a="Hey! The evil doctor has taken over.\n It's our final opportunity to save the planet.\n Suit up doc!"
-        text(a,game.w//1.5+40,game.h//7+60)
+        a = "Hey! The evil doctor has taken over.\n It's our final opportunity to save the planet.\n Suit up doc!"
+        text(a, game.w//1.5+40, game.h//7+60)
         fill(255,255,255)
+        
         if 240<= mouseX <= 240+115 and 160<= mouseY <= 160+70:
             image(self.play,240,160,115,70)
         
@@ -443,15 +443,19 @@ class Intro:
             fill(0)
         else:
             fill(255,255,255)
+            
         text("Back",50,650)
         
         
 intro = Intro()
-game = Game(1280,720,650,"1",3) 
+game = Game(1280, 720, 650, "1", 3) 
    
 def setup():
     size(game.w, game.h)
     background(255)
+
+# def restart():
+    # Assign initial values to all global variables and new instances to objects.
 
 def draw():
     if not game.pause:
@@ -465,10 +469,18 @@ def draw():
             game.display()
   
 def mouseClicked():
+    global game
+    if game.newlevel == True:
+        try: 
+            game = Game(1280, 720, 650, str(int(game.level) + 1), game.doctor.lives) 
+            game.gamestate = "play"
+        except: 
+            print("finished game")
+            
+    
     if game.gamestate == "menu":
         if 240<= mouseX <= 350 and 160<= mouseY <= 160+70:
             game.gamestate = "play"
-
         elif 240<= mouseX <= 350 and 280<= mouseY <= 350:
              exit()
         elif 240<= mouseX <= 350 and 400<= mouseY <= 470:
@@ -479,8 +491,12 @@ def mouseClicked():
             game.gamestate = "menu"
             
     elif game.gamestate == "over":
-        global game
+        global game  
         game = Game(1280,720,650,"1",3) 
+        
+        
+    
+   
         
         
 def keyReleased():
@@ -503,7 +519,6 @@ def keyPressed():
     #checking is game is paused
     if keyCode == 32: #checks if space bar 
         game.update()
-        
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
         
     elif keyCode == 80:
@@ -523,3 +538,5 @@ def keyPressed():
         else:
             game.pause = True
             game.bgSound.pause()
+            
+   
