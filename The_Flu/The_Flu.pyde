@@ -14,6 +14,8 @@ checkpoint = loadImage(path + "/images/checkpoint.png")
 img = loadImage(path + "/images/run.png")
 jmp_img = loadImage(path + "/images/jump.png")
 shoot_img = loadImage(path + "/images/shoot.png")
+antidote_img = loadImage(path+"/images/antidote.png")
+
 
 class Game():
     def __init__(self, w, h, g, l,lives):
@@ -94,7 +96,8 @@ class Game():
             fill(255,255,255)
             textSize(20)
             text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
-            text("Lives Remaining: " + str(self.doctor.lives), 1000, 90)
+            text("Lives Remaining: " + str(self.doctor.lives), 1000, 80) 
+            text("Germs Killed: " + str(self.doctor.germCnt), 1000, 110) 
             # self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
 
             for f in self.fires:
@@ -180,11 +183,16 @@ class Antidote(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
         self.frame = 1
-        self.img = loadImage(path+"/images/"+img)
+    
+    def update(self):
+        if frameCount % 20 == 0:
+            self.frame = (self.frame + 1) % 5
     
     def display(self):
-        image(self.img,self.x-self.w//2,self.y-game.y_shift-self.h//2,self.w, self.h)
-        # self.frame = (self.frame + 1) % self.F
+        self.update()
+        image(antidote_img,self.x-self.w//2,self.y-game.y_shift-self.h//2,self.w, self.h,self.frame * 250, 0, (self.frame+1) * 250, 250)
+        # if frameRate % 2 == 0:
+        
         # print(self.frame)
         
         
@@ -261,6 +269,7 @@ class Fire(Creature):
                 game.germs.remove(e)
                 game.fires.remove(self)
                 del e
+                game.doctor.germCnt += 1
         
         
     def display(self):
@@ -349,13 +358,14 @@ class Doctor(Creature):
                     self.germCnt += 1
                 else:
                     if self.lives > 0:
-                        change_level("1",self.lives-1,"play")             #work left
+                        change_level(game.level,self.lives-1,"play")             #work left
                     else:
                         game.gamestate = "over"
                         text("Game Over",500,400)
                         text("Press anywhere to restart the game.",500,440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
+        
             image(self.inst_bground,0,0)
             
             # if game.level<=2:
@@ -428,11 +438,18 @@ class Intro:
         self.intro = loadImage(path+"/images/intro.png")
         self.play = loadImage(path+"/images/play.png")
         self.quit = loadImage(path+"/images/quit.png")
+        
+        self.bground_m =  player.loadFile(path + "/sounds/bground.mp3")
 
         self.i = 0
         self.time = 1
         
+        
+        
     def menudisplay(self):
+
+        
+        
         image(self.bground,0,0,game.w, game.h)
         image(self.cloud,game.w//1.5,game.h//7,400,328)
         # image(self.play,100,210,300,200)
@@ -459,6 +476,10 @@ class Intro:
             image(self.play,240,400,115,70)
     
     def instructions(self):
+        
+        # self.bground_m.play()
+        # self.bground_m.rewind()
+        
         image(self.inst_bground,0,0)
         fill(0)
         
@@ -475,7 +496,7 @@ game = Game(1280,720,650,"1",3)
 
 def change_level(level,life,state):
     global game
-    del game
+    # del game
     game = Game(1280,720,650,str(level),life) 
     game.gamestate = state
     
@@ -493,7 +514,7 @@ def draw():
         elif game.gamestate == "instructions":
             intro.instructions()
         elif game.gamestate == "play":
-            
+            # intro.bground_m.close()
             game.display()
   
 def mouseClicked():
@@ -535,7 +556,7 @@ def keyPressed():
     if game.speed == 0:
         game.speed = game.speed_temp
     #checking is game is paused
-    if keyCode == 32: #checks if space bar 
+    if keyCode == 32 and game.gamestate == "play": #checks if space bar 
         game.doctor.shoot = True
         game.update()
         

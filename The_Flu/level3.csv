@@ -1,0 +1,15 @@
+﻿platform,900,-100,200,100,platform.png,8,,
+platform,100,300,300,100,platform.png,8,,
+platform,450,100,350,100,platform.png,8,,
+platform,100,550,200,100,platform.png,8,,
+platform,900,380,200,100,platform.png,8,,
+platform,500,420,300,100,platform.png,8,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+speed ,0.8,,,,,,,
+,,,,,,,,
+type,x,y,r,g,img,w,h,f
+checkpoint,1000,-1065,60,0,checkpoint.png,120,120,1
+,,,,,,,,
+detonator,,,,,,,,
