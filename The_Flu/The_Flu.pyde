@@ -5,6 +5,15 @@ player = Minim(this)
 
 path=os.getcwd()
 
+#loading the images as it was lagging loading it inside the class
+platformimg = loadImage(path+"/images/platform.png")
+germ = loadImage(path+"/images/germ.png")
+# play_bground = loadImage(path+"/images/play_bground.png")
+fire_img = loadImage(path + "/images/pew.png")
+checkpoint = loadImage(path + "/images/checkpoint.png")
+img = loadImage(path + "/images/run.png")
+jmp_img = loadImage(path + "/images/jump.png")
+shoot_img = loadImage(path + "/images/shoot.png")
 
 class Game():
     def __init__(self, w, h, g, l,lives):
@@ -21,11 +30,9 @@ class Game():
         
         self.speed = 0
         inputFile = open(path+"/level"+l+".csv","r")
-        # self.game_bground = loadImage(path+"/images/play_bground.jpg")
-        self.play_bground = loadImage(path+"/images/play_bground.png")
         
-        self.jmp_img = loadImage(path + "/images/jump.png")
-        self.shoot_img = loadImage(path + "/images/shoot.png")
+        
+        # self.platformimg = loadImage(path+"/images/platform.png")
         
         self.antidotes = []
         self.bgImgs = []
@@ -33,7 +40,7 @@ class Game():
         self.fires = []
         self.platforms = []
         
-        self.platformimg = loadImage(path+"/images/platform.png")
+        
         
         self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives)
         self.detonator = Detonator(0,1000,20,"cloud.png")
@@ -63,7 +70,7 @@ class Game():
     def display(self):
 
         if self.gamestate == "play":
-            # image(self.play_bground,0,0,game.w, game.h)
+            # image(play_bground,0,0,game.w, game.h)
             background(0)
             if frameRate % 2 == 0:
                 fill(255,0,0)
@@ -102,7 +109,7 @@ class Creature:
         self.g = g
         self.vy = 0
         self.vx = 0
-        self.img = loadImage(path + "/images/" + img)
+        # self.img = loadImage(path + "/images/" + img)
         # self.jmp_img = loadImage(path + "/images/jump.png")
         # self.shoot_img = loadImage(path + "/images/shoot.png")
         self.w = w
@@ -142,27 +149,27 @@ class Creature:
         if self.xdirection == RIGHT:
             if self.vy !=0:
                 if self.shoot == True and game.doctor.antiCnt >0 :
-                    image(game.shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    image(shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                 else:
-                    image(game.jmp_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    image(jmp_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
             else:
                 if self.shoot == True and game.doctor.antiCnt >0:
-                    image(game.shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    image(shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                 else:
-                    image(self.img, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
+                    image(img, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
                 
                                 
         elif self.xdirection == LEFT:
             if self.vy !=0:
                 if self.shoot == True and game.doctor.antiCnt >0:
-                    image(game.shoot_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                    image(shoot_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
                 else:
-                    image(game.jmp_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                    image(jmp_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
             else:
                 if self.shoot == True and game.doctor.antiCnt >0:
-                    image(game.shoot_img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
+                    image(shoot_img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
                 else:
-                    image(self.img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
+                    image(img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
                     
                     
     def distance(self, target):
@@ -224,7 +231,7 @@ class Germ(Creature):
     def display(self):
         self.update()
         # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
-        image(self.img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
+        image(germ, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
         # image(self.img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame+1) * 500, 0, (self.frame +1) * 500, 500)
         
         
@@ -260,9 +267,9 @@ class Fire(Creature):
         self.update()
         
         if self.direction == RIGHT:
-            image(self.img, self.x-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h)
+            image(fire_img, self.x-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h)
         elif self.direction == LEFT:
-            image(self.img, self.x-self.w-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h,200,150,0,0)
+            image(fire_img, self.x-self.w-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h,200,150,0,0)
             
         
     def distance(self, target):
@@ -315,7 +322,7 @@ class Doctor(Creature):
         
         if self.y>self.over:
             if self.lives > 0:
-                change_level("1",self.lives-1,"play")
+                change_level(game.level,self.lives-1,"play")
             else:
                 game.gamestate = "over"
                 text("Game Over",500,400)
@@ -378,7 +385,7 @@ class Platform:
     def display(self):
         self.update()
         # rect(self.x , self.y-game.y_shift, self.w, self.h)
-        image(game.platformimg, self.x , self.y-game.y_shift, self.w, self.h,self.frame * 1200, 350, (self.frame+1) * 1200, 960)        
+        image(platformimg, self.x , self.y-game.y_shift, self.w, self.h,self.frame * 1200, 350, (self.frame+1) * 1200, 960)        
         
     
 class Checkpoint(Creature):
@@ -387,7 +394,7 @@ class Checkpoint(Creature):
         
     def display(self):
         # if self.y <= 100:
-        image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
+        image(checkpoint, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
 
 
 class Detonator(Creature):
@@ -504,7 +511,7 @@ def mouseClicked():
             game.gamestate = "menu"
             
     elif game.gamestate == "over":
-        change_level("1",3,"menu")
+        change_level(game.level,3,"menu")
         
         
 def keyReleased():
