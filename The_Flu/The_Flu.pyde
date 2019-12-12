@@ -452,6 +452,7 @@ class Intro:
         self.intro = loadImage(path+"/images/intro.png")
         self.play = loadImage(path+"/images/play.png")
         self.quit = loadImage(path+"/images/quit.png")
+        self.instructions = loadImage(path+"/images/instructions.png")
         
         self.bground_m =  player.loadFile(path + "/sounds/bground.mp3")
 
@@ -469,23 +470,24 @@ class Intro:
             self.i = (self.i+1)%15
         # print(mouseX,mouseY)
         image(self.play,240,160,105,60)
-        image(self.play,240,400,105,60)
         image(self.quit,240,280,105,60)
+        image(self.instructions,240,400,150,70)
         fill(0)
         textSize(15)
         a="Hey! The evil doctor has taken over.\n It's our final opportunity to save the planet.\n Suit up doc!"
         text(a,game.w//1.5+40,game.h//7+60)
         fill(255,255,255)
+        # image with greater width and height 
         if 240<= mouseX <= 240+115 and 160<= mouseY <= 160+70:
             image(self.play,240,160,115,70)
         
         elif 240<= mouseX <= 240+115 and 280<= mouseY <= 350:
             image(self.quit,240,280,115,70)
     
-        elif 240<= mouseX <= 240+115 and 400<= mouseY <= 470:
-            image(self.play,240,400,115,70)
+        elif 240<= mouseX <= 240+160 and 400<= mouseY <= 470:
+            image(self.instructions,240,400,160,80)
     
-    def instructions(self):
+    def instruction(self):
         
         # self.bground_m.play()
         # self.bground_m.rewind()
@@ -522,7 +524,7 @@ def draw():
         if game.gamestate == "menu":
             intro.menudisplay()
         elif game.gamestate == "instructions":
-            intro.instructions()
+            intro.instruction()
         elif game.gamestate == "play":
             # intro.bground_m.close()
             game.display()
