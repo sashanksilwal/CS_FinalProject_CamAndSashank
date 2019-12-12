@@ -8,6 +8,7 @@ path=os.getcwd()
 #loading the images as it was lagging loading it inside the class
 platformimg = loadImage(path+"/images/platform.png")
 germ = loadImage(path+"/images/germ.png")
+villian = loadImage(path + "/images/antagonistic.png")
 # play_bground = loadImage(path+"/images/play_bground.png")
 fire_img = loadImage(path + "/images/pew.png")
 checkpoint = loadImage(path + "/images/checkpoint.png")
@@ -41,7 +42,7 @@ class Game():
         self.germs = []
         self.fires = []
         self.platforms = []
-        
+        self.villians = []
         
         
         self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives)
@@ -59,6 +60,8 @@ class Game():
                 self.speed_temp = float(line[1])
             elif line[0] == "checkpoint":
                 self.checkpoint = Checkpoint(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]),int(line[8]))
+            elif line[0] == "villian":
+                self.villians = Villian(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]),int(line[8]))
         
     def update(self):
         
@@ -242,7 +245,22 @@ class Germ(Creature):
         image(germ, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
         # image(self.img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame+1) * 500, 0, (self.frame +1) * 500, 500)
         
+class Villian(Germ):
+    def __init__(self, x, y, r, g, img, w, h, f, x1, y1, x2, y2, xspeed, yspeed, lives):
+        Germ.__init__(self, x, y, r, g, img, w, h, f, x1, y1, x2, y2, xspeed, yspeed)
+        self.lives = lives
         
+    def update(self):
+        if self.distance <= game.doctor.r + self.r:
+            self.lives -= 1
+    
+    def display(self):
+        # if self.lives == 0:
+            # end game
+        self.update()
+        image(villian, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
+        
+    
 class Fire(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
