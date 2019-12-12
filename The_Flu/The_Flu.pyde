@@ -18,6 +18,8 @@ img = loadImage(path + "/images/run.png")
 jmp_img = loadImage(path + "/images/jump.png")
 shoot_img = loadImage(path + "/images/shoot.png")
 antidote_img = loadImage(path+"/images/antidote.png")
+info = loadImage(path+"/images/info.jpeg")
+
 germ_img = []
 germ_img.append(germ)
 germ_img.append(germ1)
@@ -38,16 +40,13 @@ class Game():
         self.speed = 0
         inputFile = open(path+"/level"+l+".csv","r")
         
-        
-        # self.platformimg = loadImage(path+"/images/platform.png")
-        
         self.antidotes = []
         self.bgImgs = []
         self.germs = []
         self.fires = []
         self.platforms = []
         self.villians = []
-        
+        # self.a = 0
         
         self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives)
         self.detonator = Detonator(0,1000,20,"cloud.png")
@@ -77,7 +76,7 @@ class Game():
             
     
     def display(self):
-
+        
         if self.gamestate == "play":
             # image(play_bground,0,0,game.w, game.h)
             background(0)
@@ -97,11 +96,10 @@ class Game():
             self.checkpoint.display()   
             self.doctor.display()
             
-            # if self.doctor.shoot == True:
-            #     self.fire.display()
-            
             fill(255,255,255)
             textSize(20)
+            # self.a += 1
+            # print(self.a)
             text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
             text("Lives Remaining: " + str(self.doctor.lives), 1000, 80) 
             text("Germs Killed: " + str(self.doctor.germCnt), 1000, 110) 
@@ -109,9 +107,12 @@ class Game():
 
             for f in self.fires:
                 f.display()
+        if self.gamestate == "info":
+            image(info,0,0)
                 
 
 class Creature:
+    
     def __init__(self, x, y, r, g, img, w, h, slices):
         self.x = x
         self.y = y
@@ -120,8 +121,6 @@ class Creature:
         self.vy = 0
         self.vx = 0
         self.img = img
-        # self.jmp_img = loadImage(path + "/images/jump.png")
-        # self.shoot_img = loadImage(path + "/images/shoot.png")
         self.w = w
         self.h = h
         self.slices = slices
@@ -147,7 +146,6 @@ class Creature:
         
     def update(self):
         self.gravity()
-        
         self.y += self.vy
         self.x += self.vx
         
@@ -155,32 +153,32 @@ class Creature:
         self.update()
         fill(255, 255, 255)
         stroke(0, 0, 0)
-        
-        if self.xdirection == RIGHT:
-            if self.vy !=0:
-                if self.shoot == True and game.doctor.antiCnt >0 :
-                    image(shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+        if game.gamestate == "play":
+            if self.xdirection == RIGHT:
+                if self.vy !=0:
+                    if self.shoot == True and game.doctor.antiCnt >0 :
+                        image(shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    else:
+                        image(jmp_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                 else:
-                    image(jmp_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
-            else:
-                if self.shoot == True and game.doctor.antiCnt >0:
-                    image(shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
-                else:
-                    image(img, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
-                
-                                
-        elif self.xdirection == LEFT:
-            if self.vy !=0:
-                if self.shoot == True and game.doctor.antiCnt >0:
-                    image(shoot_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
-                else:
-                    image(jmp_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
-            else:
-                if self.shoot == True and game.doctor.antiCnt >0:
-                    image(shoot_img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
-                else:
-                    image(img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
+                    if self.shoot == True and game.doctor.antiCnt >0:
+                        image(shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    else:
+                        image(img, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
                     
+                                    
+            elif self.xdirection == LEFT:
+                if self.vy !=0:
+                    if self.shoot == True and game.doctor.antiCnt >0:
+                        image(shoot_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                    else:
+                        image(jmp_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                else:
+                    if self.shoot == True and game.doctor.antiCnt >0:
+                        image(shoot_img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
+                    else:
+                        image(img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
+                        
                     
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
@@ -198,9 +196,6 @@ class Antidote(Creature):
     def display(self):
         self.update()
         image(antidote_img,self.x-self.w//2,self.y-game.y_shift-self.h//2,self.w, self.h,self.frame * 250, 0, (self.frame+1) * 250, 250)
-        # if frameRate % 2 == 0:
-        
-        # print(self.frame)
         
         
 class Germ(Creature):
@@ -306,8 +301,7 @@ class Fire(Creature):
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5 
         
-        
-        
+              
 class Doctor(Creature):
     def __init__(self, x, y, r, g, img, w, h, F,lives):
         Creature.__init__(self, x, y, r, g, img, w, h, F)
@@ -388,13 +382,11 @@ class Doctor(Creature):
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
         
-            image(self.inst_bground,0,0)
-            
+            game.gamestate = "info"
             # if game.level<=2:
-
-            game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives) 
+            # game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives) 
             
-            game.gamestate = "play"
+            # game.gamestate = "play"
                 
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
@@ -466,12 +458,8 @@ class Intro:
         self.i = 0
         self.time = 1
         
-        
-        
     def menudisplay(self):
 
-        
-        
         image(self.bground,0,0,game.w, game.h)
         image(self.cloud,game.w//1.5,game.h//7,400,328)
         # image(self.play,100,210,300,200)
@@ -554,7 +542,7 @@ def mouseClicked():
             game.gamestate = "menu"
             
     elif game.gamestate == "over":
-        change_level(game.level,3,"menu")
+        change_level("1",3,"menu")
         
         
 def keyReleased():
@@ -572,7 +560,11 @@ def keyReleased():
 
     # elif  keyCode == 32 and game.doctor.shoot:
     #     game.doctor.shoot = False
-        
+    
+def checkpoint_reached():
+    global game
+    game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives)     
+    game.gamestate = "play"       
     
 def keyPressed():
     if game.speed == 0:
@@ -581,7 +573,8 @@ def keyPressed():
     if keyCode == 32 and game.gamestate == "play": #checks if space bar 
         game.doctor.shoot = True
         game.update()
-        
+    if keyCode == 32 and game.gamestate == "info":
+        checkpoint_reached()
         #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
         
     elif keyCode == 80:
