@@ -8,6 +8,8 @@ path=os.getcwd()
 #loading the images as it was lagging loading it inside the class
 platformimg = loadImage(path+"/images/platform.png")
 germ = loadImage(path+"/images/germ.png")
+germ1 = loadImage(path+"/images/germ1.png")
+germ2 = loadImage(path+"/images/coin.png")
 villian = loadImage(path + "/images/antagonistic.png")
 # play_bground = loadImage(path+"/images/play_bground.png")
 fire_img = loadImage(path + "/images/pew.png")
@@ -16,8 +18,10 @@ img = loadImage(path + "/images/run.png")
 jmp_img = loadImage(path + "/images/jump.png")
 shoot_img = loadImage(path + "/images/shoot.png")
 antidote_img = loadImage(path+"/images/antidote.png")
-
-
+germ_img = []
+germ_img.append(germ)
+germ_img.append(germ1)
+germ_img.append(germ2)
 class Game():
     def __init__(self, w, h, g, l,lives):
         self.gamestate= "menu"
@@ -51,9 +55,9 @@ class Game():
         for line in inputFile:
             line = line.strip().split(",")
             if line[0] == "platform":
-                self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), line[5],int(line[6])))
+                self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), int(line[6])))
             elif line[0] == "germ":
-                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), float(line[13]), int(line[14])))
+                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, int(line[5]), int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), float(line[13]), float(line[14])))
             elif line[0] == "antidotes":
                 self.antidotes.append(Antidote(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8])))
             elif line[0] == "speed":
@@ -115,7 +119,7 @@ class Creature:
         self.g = g
         self.vy = 0
         self.vx = 0
-        # self.img = loadImage(path + "/images/" + img)
+        self.img = img
         # self.jmp_img = loadImage(path + "/images/jump.png")
         # self.shoot_img = loadImage(path + "/images/shoot.png")
         self.w = w
@@ -242,7 +246,7 @@ class Germ(Creature):
     def display(self):
         self.update()
         # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
-        image(germ, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
+        image(germ_img[self.img], self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
         # image(self.img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame+1) * 500, 0, (self.frame +1) * 500, 500)
         
 class Villian(Germ):
@@ -397,7 +401,7 @@ class Doctor(Creature):
         
 
 class Platform:
-    def __init__(self,x,y, w, h, img,slice):
+    def __init__(self,x,y, w, h, slice):
         self.x = x
         self.y = y
         self.w = w
