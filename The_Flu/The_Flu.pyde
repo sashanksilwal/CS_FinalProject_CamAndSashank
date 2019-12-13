@@ -10,6 +10,9 @@ platformimg = loadImage(path + "/images/platform.png")
 germ = loadImage(path + "/images/germ.png")
 germ1 = loadImage(path + "/images/germ1.png")
 germ2 = loadImage(path + "/images/coin.png")
+
+
+
 villian = loadImage(path + "/images/antagonistic.png")
 # play_bground = loadImage(path+"/images/play_bground.png")
 fire_img = loadImage(path + "/images/pew.png")
@@ -242,7 +245,7 @@ class Germ(Creature):
     def display(self):
         self.update()
         # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
-        image(germ_img[self.img], self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
+        image(germ_img[self.img], self.x-self.w//2, self.y -self.h//2 - game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
         # image(self.img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame+1) * 500, 0, (self.frame +1) * 500, 500)
         
 class Villian(Germ):
