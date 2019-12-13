@@ -23,7 +23,8 @@ info1 = loadImage(path+"/images/info2.jpeg")
 info=[]
 info.append(info0)
 info.append(info1)
-
+level_count = {}
+total = 0
 
 germ_img = []
 germ_img.append(germ)
@@ -367,6 +368,10 @@ class Doctor(Creature):
                 change_level(game.level,self.lives-1,"play")
             else:
                 game.gamestate = "over"
+                for i, j in level_count.items():
+                    text("Level: "+i+" Germs killed: "+str(j),500,280+int(i)*20)
+                
+              
                 text("Game Over",500,400)
                 text("Press anywhere to restart the game.",500,440)
     
@@ -396,17 +401,25 @@ class Doctor(Creature):
                         change_level(game.level,self.lives-1,"play")             #work left
                     else:
                         game.gamestate = "over"
+                        for i, j in level_count.items():
+                            text("Level: "+i+" Germs killed: "+str(j),500,320+int(i)*20)
                         text("Game Over",500,400)
                         text("Press anywhere to restart the game.",500,440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
+            level_count[game.level] = self.germCnt
             if int(game.level)<=2:
+                
+                
                 game.gamestate = "info"
             else:
+                for i, j in level_count.items():
+                    text("Level: "+i+" Germs killed: "+str(j),500,180+int(i)*20)
                 textSize(50)
                 text("Completed",500,300)
                 textSize(15)
                 text("Press anywhere to restart",540,330)
+            
                 game.gamestate = "over"
             # game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives) 
             
