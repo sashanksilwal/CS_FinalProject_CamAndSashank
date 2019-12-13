@@ -377,7 +377,7 @@ class Doctor(Creature):
         for e in game.germs:
             
             if self.distance(e) <= self.r + e.r:
-                if self.vy > 0 and self.antiCnt>0:
+                if self.vy > 0 and self.antiCnt>0 and int(game.level)<=2:
                     e.lives -= 1
                     if e.lives == 0:
                         game.germs.remove(e)
