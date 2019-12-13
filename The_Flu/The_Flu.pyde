@@ -6,10 +6,10 @@ player = Minim(this)
 path=os.getcwd()
 
 #loading the images as it was lagging loading it inside the class
-platformimg = loadImage(path+"/images/platform.png")
-germ = loadImage(path+"/images/germ.png")
-germ1 = loadImage(path+"/images/germ1.png")
-germ2 = loadImage(path+"/images/coin.png")
+platformimg = loadImage(path + "/images/platform.png")
+germ = loadImage(path + "/images/germ.png")
+germ1 = loadImage(path + "/images/germ1.png")
+germ2 = loadImage(path + "/images/coin.png")
 villian = loadImage(path + "/images/antagonistic.png")
 # play_bground = loadImage(path+"/images/play_bground.png")
 fire_img = loadImage(path + "/images/pew.png")
@@ -17,16 +17,17 @@ checkpoint = loadImage(path + "/images/checkpoint.png")
 img = loadImage(path + "/images/run.png")
 jmp_img = loadImage(path + "/images/jump.png")
 shoot_img = loadImage(path + "/images/shoot.png")
-antidote_img = loadImage(path+"/images/antidote.png")
-info = loadImage(path+"/images/info.jpeg")
+antidote_img = loadImage(path + "/images/antidote.png")
+info = loadImage(path + "/images/info.jpeg")
 
 germ_img = []
 germ_img.append(germ)
 germ_img.append(germ1)
 germ_img.append(germ2)
-class Game():
+
+class Game:
     def __init__(self, w, h, g, l,lives):
-        self.gamestate= "menu"
+        self.gamestate = "menu"
         self.shoot_once = True
         self.x = 0
         self.w = w
@@ -38,7 +39,7 @@ class Game():
         self.level = l
         
         self.speed = 0
-        inputFile = open(path+"/level"+l+".csv","r")
+        inputFile = open(path + "/level"+l+".csv","r")
         
         self.antidotes = []
         self.bgImgs = []
@@ -48,7 +49,7 @@ class Game():
         self.villians = []
         # self.a = 0
         
-        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives)
+        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6, lives)
         self.detonator = Detonator(0,1000,20,"cloud.png")
 
         for line in inputFile:
@@ -342,21 +343,21 @@ class Doctor(Creature):
         self.x += self.vx
         self.y += self.vy
         
-        game.y_shift += -game.speed
-        self.over += -game.speed
-        
-        if self.y>self.over:
+        game.y_shift -= game.speed
+        self.over -= game.speed
+    
+        if self.y > self.over:
             if self.lives > 0:
-                change_level(game.level,self.lives-1,"play")
+                change_level(game.level, self.lives - 1, "play")
             else:
                 game.gamestate = "over"
                 text("Game Over",500,400)
-                text("Press anywhere to restart the game.",500,440)
+                text("Press anywhere to restart the game.", 500, 440)
     
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
             
-        if frameCount %40 == 0 :
+        if frameCount %40 == 0:
             self.frame_jump = (self.frame_jump + 1) % 2
 
         for s in game.antidotes:
@@ -374,7 +375,8 @@ class Doctor(Creature):
                     self.germCnt += 1
                 else:
                     if self.lives > 0:
-                        change_level(game.level,self.lives-1,"play")             #work left
+                        change_level(game.level,self.lives-1,"play")
+                        #work left
                     else:
                         game.gamestate = "over"
                         text("Game Over",500,400)
@@ -413,8 +415,8 @@ class Platform:
         
     
 class Checkpoint(Creature):
-    def __init__(self, x, y, r, g, img, w, h, F):
-        Creature.__init__(self, x, y, r, g, img, w, h, F)
+    def __init__(self, x, y, r, g, img, w, h, f):
+        Creature.__init__(self, x, y, r, g, img, w, h, f)
         
     def display(self):
         # if self.y <= 100:
@@ -443,7 +445,6 @@ class Detonator(Creature):
     
             
 class Intro:
-    
     def __init__(self):
         self.cloud = loadImage(path+"/images/cloud.png")
         self.bground = loadImage(path+"/images/intro_background.jpeg")
@@ -460,32 +461,31 @@ class Intro:
         self.time = 1
         
     def menudisplay(self):
-
-        image(self.bground,0,0,game.w, game.h)
-        image(self.cloud,game.w//1.5,game.h//7,400,328)
+        image(self.bground, 0, 0, game.w, game.h)
+        image(self.cloud, game.w // 1.5, game.h // 7, 400, 328)
         # image(self.play,100,210,300,200)
-        image(self.intro,game.w//1.5,game.h//2,400,380,800*self.i,0,800*(self.i+1),600)
-        
-        if frameCount % 3 ==0:
-            self.i = (self.i+1)%15
+        image(self.intro, game.w // 1.5, game.h // 2, 400, 380, 800 * self.i, 0, 800 * (self.i+1), 600)
+         
+        if frameCount % 3 == 0:
+            self.i = (self.i+1) % 15
         # print(mouseX,mouseY)
-        image(self.play,240,160,105,60)
-        image(self.quit,240,280,105,60)
-        image(self.instructions,240,400,150,70)
+        image(self.play, 240, 160, 105, 60)
+        image(self.quit, 240, 280, 105, 60)
+        image(self.instructions, 240, 400, 150, 70)
         fill(0)
         textSize(15)
         a="Hey! The evil doctor has taken over.\n It's our final opportunity to save the planet.\n Suit up doc!"
-        text(a,game.w//1.5+40,game.h//7+60)
-        fill(255,255,255)
+        text(a,game.w // 1.5 + 40, game.h // 7 + 60)
+        fill(255, 255, 255)
         # image with greater width and height 
-        if 240<= mouseX <= 240+115 and 160<= mouseY <= 160+70:
-            image(self.play,240,160,115,70)
+        if 240 <= mouseX <= 240 + 115 and 160 <= mouseY <= 160 + 70:
+            image(self.play, 240, 160, 115, 70)
         
-        elif 240<= mouseX <= 240+115 and 280<= mouseY <= 350:
-            image(self.quit,240,280,115,70)
+        elif 240 <= mouseX <= 240 + 115 and 280 <= mouseY <= 350:
+            image(self.quit, 240, 280, 115, 70)
     
-        elif 240<= mouseX <= 240+160 and 400<= mouseY <= 470:
-            image(self.instructions,240,400,160,80)
+        elif 240 <= mouseX <= 240 + 160 and 400 <= mouseY <= 470:
+            image(self.instructions, 240, 400, 160, 80)
     
     def instruction(self):
         
@@ -495,11 +495,11 @@ class Intro:
         image(self.inst_bground,0,0)
         fill(0)
         
-        if 50<= mouseX <= 105 and 635<= mouseY <= 655:
+        if 50 <= mouseX <= 105 and 635 <= mouseY <= 655:
             fill(0)
         else:
-            fill(255,255,255)
-        text("Back",50,650)
+            fill(255, 255, 255)
+        text("Back", 50, 650)
         
         
 intro = Intro()
