@@ -397,7 +397,7 @@ class Doctor(Creature):
                     else:
                         game.gamestate = "over"
                         text("Game Over",500,400)
-                        text("Press anywhere to restart the game.",560,460)
+                        text("Press anywhere to restart the game.",500,440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             if int(game.level)<=2:
@@ -406,7 +406,7 @@ class Doctor(Creature):
                 textSize(50)
                 text("Completed",500,300)
                 textSize(15)
-                text("Press anywhere to restart",500,320)
+                text("Press anywhere to restart",540,330)
                 game.gamestate = "over"
             # game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives) 
             
