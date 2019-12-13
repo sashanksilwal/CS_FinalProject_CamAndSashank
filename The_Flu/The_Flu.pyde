@@ -52,8 +52,11 @@ class Game():
         self.platforms = []
         self.villians = []
         # self.a = 0
-        
-        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives)
+        if l == "3":
+            cnt = 10
+        else:
+            cnt = 5
+        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives,cnt)
         # self.detonator = Detonator(0,1000,20,"cloud.png")
 
         for line in inputFile:
@@ -114,6 +117,7 @@ class Game():
                 f.display()
         if self.gamestate == "info":
             image(info[int(game.level)-1],0,0)
+        
                 
 
 class Creature:
@@ -246,6 +250,8 @@ class Germ(Creature):
         
     def display(self):
         self.update()
+        if game.level =="3" and self.w>90:
+            text("Germ Lives: "+str(self.lives),50,50)
         # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
         image(germ_img[self.img], self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
         # image(self.img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame+1) * 500, 0, (self.frame +1) * 500, 500)
@@ -313,19 +319,20 @@ class Fire(Creature):
         
               
 class Doctor(Creature):
-    def __init__(self, x, y, r, g, img, w, h, F,lives):
+    def __init__(self, x, y, r, g, img, w, h, F,lives,cnt):
         Creature.__init__(self, x, y, r, g, img, w, h, F)
+        
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
         self.shootsound = player.loadFile(path + "/sounds/shoot.mp3")
         self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
         self.germCnt = 0
-        self.antiCnt = 5
         self.lives = lives
         self.vy1 = -0.3
         self.shoot = False
         self.over = 645
         self.xdirection = RIGHT
         self.ydirection = DOWN
+        self.antiCnt = cnt
         
     def update(self):
         global game
@@ -390,7 +397,7 @@ class Doctor(Creature):
                     else:
                         game.gamestate = "over"
                         text("Game Over",500,400)
-                        text("Press anywhere to restart the game.",500,440)
+                        text("Press anywhere to restart the game.",560,460)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             if int(game.level)<=2:
@@ -398,6 +405,8 @@ class Doctor(Creature):
             else:
                 textSize(50)
                 text("Completed",500,300)
+                textSize(15)
+                text("Press anywhere to restart",500,320)
                 game.gamestate = "over"
             # game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives) 
             
@@ -580,6 +589,7 @@ def keyReleased():
     
 def checkpoint_reached():
     global game
+    
     game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives)     
     game.gamestate = "play"       
     
