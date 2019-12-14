@@ -91,7 +91,8 @@ class Game:
     def display(self):
         if self.gamestate == "play":
             background(0)
-            
+            fill(255,0,0)
+            rect(0,675,1280,5)
             # if frameRate % 2 == 0:
             #     fill(255,0,0)
             # else:
@@ -439,7 +440,7 @@ class Intro:
     def __init__(self):
         self.cloud = loadImage(path+"/images/cloud.png")
         self.bground = loadImage(path+"/images/intro_background.jpeg")
-        self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
+        self.inst_bground = loadImage(path+"/images/instructions_bg.png")
         self.intro = loadImage(path+"/images/intro.png")
         self.play = loadImage(path+"/images/play.png")
         self.quit = loadImage(path+"/images/quit.png")
@@ -482,11 +483,12 @@ class Intro:
         image(self.inst_bground, 0, 0)
         fill(0)
         
-        if 50 <= mouseX <= 105 and 635 <= mouseY <= 655:
+        if 50 <= mouseX <= 105 and 645 <= mouseY <= 665:
             fill(0)
         else:
             fill(255, 255, 255)
-        text("Back", 50, 650)
+        textSize(20)
+        text("Back", 50, 660)
         
         
 intro = Intro()
@@ -533,7 +535,7 @@ def mouseClicked():
             game.gamestate = "instructions"
             
     elif game.gamestate == "instructions":
-        if 50<= mouseX <= 105 and 635<= mouseY <= 655:
+        if 50<= mouseX <= 105 and 645<= mouseY <= 665:
             game.gamestate = "menu"
             
     elif game.gamestate == "over":
