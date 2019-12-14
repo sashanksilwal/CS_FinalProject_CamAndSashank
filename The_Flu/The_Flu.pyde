@@ -2,40 +2,45 @@ add_library('minim')
 import os, time, random
 
 player = Minim(this)
+path = os.getcwd()
 
-path=os.getcwd()
+# loaded the images here since it lagged when loaded inside class
+PLATFORMING = loadImage(path + "/images/platform.png")
+CHECKPOINT = loadImage(path + "/images/checkpoint.png")
+ANTIDOTE = loadImage(path + "/images/antidote.png")
 
-#loading the images as it was lagging loading it inside the class
-platformimg = loadImage(path+"/images/platform.png")
-germ = loadImage(path+"/images/germ.png")
-germ1 = loadImage(path+"/images/germ1.png")
-germ2 = loadImage(path+"/images/germ2.png")
-germ3 = loadImage(path+"/images/germ3.png")
-villian = loadImage(path + "/images/antagonistic.png")
-fire_img = loadImage(path + "/images/pew.png")
-checkpoint = loadImage(path + "/images/checkpoint.png")
-img = loadImage(path + "/images/run.png")
-jmp_img = loadImage(path + "/images/jump.png")
-shoot_img = loadImage(path + "/images/shoot.png")
-antidote_img = loadImage(path+"/images/antidote.png")
-info0 = loadImage(path+"/images/info_level2.png")
-info1 = loadImage(path+"/images/info_level3.png")
+DOC_RUN = loadImage(path + "/images/run.png")
+DOC_JMP = loadImage(path + "/images/jump.png")
+DOC_SHT = loadImage(path + "/images/shoot.png")
 
-info=[]
-info.append(info0)
-info.append(info1)
+INFO_0 = loadImage(path + "/images/info_level2.png")
+INFO_1 = loadImage(path + "/images/info_level3.png")
+
+GERM_0 = loadImage(path + "/images/germ0.png")
+GERM_1 = loadImage(path + "/images/germ1.png")
+GERM_2 = loadImage(path + "/images/germ2.png")
+GERM_3 = loadImage(path + "/images/germ3.png")
+
+PEW = loadImage(path + "/images/pew.png")
+
+info = []
+info.append(INFO_0)
+info.append(INFO_1)
 level_count = {}
-total = 0
 
-germ_img = []
-germ_img.append(germ)
-germ_img.append(germ1)
-germ_img.append(germ2)
-germ_img.append(germ3)
+germs_imgs = []
+germs_imgs.append(GERM_0)
+germs_imgs.append(GERM_1)
+germs_imgs.append(GERM_2)
+germs_imgs.append(GERM_3)
 
-class Game():
-    def __init__(self, w, h, g, l,lives):
-        self.gamestate= "menu"
+SHT_SOUND = player.loadFile(path + "/sounds/shoot.mp3")
+CP_SOUND = player.loadFile(path + "/sounds/checkpoint.mp3")
+
+
+class Game:
+    def __init__(self, w, h, g, l, lives):
+        self.gamestate = "menu"
         self.shoot_once = True
         self.x = 0
         self.w = w
@@ -47,20 +52,19 @@ class Game():
         self.level = l
         self.speed_temp = 0
         self.speed = 0
-        inputFile = open(path+"/level"+l+".csv","r")
+        inputFile = open(path + "/level" + l + ".csv", "r")
         
         self.antidotes = []
-        self.bgImgs = []
         self.germs = []
         self.fires = []
         self.platforms = []
-        self.villians = []
-        # self.a = 0
-        if l == "3":
-            cnt = 10
+        
+        if self.level == "3":
+            anti_cnt = 10
         else:
-            cnt = 5
-        self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives,cnt)
+            anti_cnt = 5
+            
+        self.doctor = Doctor(150, 500, 40, self.g, "run.png", 82, 100, 6, lives, anti_cnt)
 
         for line in inputFile:
             line = line.strip().split(",")
@@ -77,11 +81,11 @@ class Game():
         
     def update(self):
         
-        if self.doctor.antiCnt>0:
+        if self.doctor.anti_cnt>0:
             self.fires.append(Fire(game.doctor.x, game.doctor.y, 15, game.g, "pew.png", 40, 30, 0))
-            self.doctor.antiCnt -= 1
-            game.doctor.shootsound.rewind()
-            game.doctor.shootsound.play()
+            self.doctor.anti_cnt -= 1
+            SHT_SOUND.rewind()
+            SHT_SOUND.play()
             
     
     def display(self):
@@ -107,9 +111,9 @@ class Game():
             
             fill(255,255,255)
             textSize(20)
-            text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
+            text("Antidotes: " + str(self.doctor.anti_cnt), 1000, 50)
             text("Lives Remaining: " + str(self.doctor.lives), 1000, 80) 
-            text("Germs Killed: " + str(self.doctor.germCnt), 1000, 110) 
+            text("Germs Killed: " + str(self.doctor.germ_cnt), 1000, 110) 
 
             for f in self.fires:
                 f.display()
@@ -163,28 +167,28 @@ class Creature:
         if game.gamestate == "play": # or game.gamestate == "over":
             if self.xdirection == RIGHT:
                 if self.vy !=0:
-                    if self.shoot == True and game.doctor.antiCnt >0 :
-                        image(shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    if self.shoot == True and game.doctor.anti_cnt >0 :
+                        image(DOC_SHT, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                     else:
-                        image(jmp_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                        image(DOC_JMP, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                 else:
-                    if self.shoot == True and game.doctor.antiCnt >0:
-                        image(shoot_img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                    if self.shoot == True and game.doctor.anti_cnt >0:
+                        image(DOC_SHT, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                     else:
-                        image(img, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
+                        image(DOC_RUN, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
                     
                                     
             elif self.xdirection == LEFT:
                 if self.vy !=0:
-                    if self.shoot == True and game.doctor.antiCnt >0:
-                        image(shoot_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                    if self.shoot == True and game.doctor.anti_cnt >0:
+                        image(DOC_SHT, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
                     else:
-                        image(jmp_img, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                        image(DOC_JMP, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
                 else:
-                    if self.shoot == True and game.doctor.antiCnt >0:
-                        image(shoot_img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
+                    if self.shoot == True and game.doctor.anti_cnt >0:
+                        image(DOC_SHT, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
                     else:
-                        image(img, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
+                        image(DOC_RUN, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
                         
                     
     def distance(self, target):
@@ -202,7 +206,7 @@ class Antidote(Creature):
     
     def display(self):
         self.update()
-        image(antidote_img,self.x-self.w//2,self.y-game.y_shift-self.h//2,self.w, self.h,self.frame * 250, 0, (self.frame+1) * 250, 250)
+        image(ANTIDOTE,self.x-self.w//2,self.y-game.y_shift-self.h//2,self.w, self.h,self.frame * 250, 0, (self.frame+1) * 250, 250)
         
         
 class Germ(Creature):
@@ -248,10 +252,10 @@ class Germ(Creature):
         
     def display(self):
         self.update()
-        if game.level =="3" and self.w>90:
-            text("Germ Lives: "+str(self.lives),50,50)
+        if game.level == "3" and self.w > 90:
+            text("Germ Lives: " + str(self.lives), 50, 50)
         # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
-        image(germ_img[self.img], self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
+        image(germs_imgs[self.img], self.x - self.w//2, self.y - self.h//2 - game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame + 1) * 500, 500)
 
     
 class Fire(Creature):
@@ -283,15 +287,15 @@ class Fire(Creature):
                     
                 if e.lives == 0:
                     game.germs.remove(e)
-                    game.doctor.germCnt += 1
+                    game.doctor.germ_cnt += 1
                     
     def display(self):
         self.update()
         
         if self.direction == RIGHT:
-            image(fire_img, self.x-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h)
+            image(PEW, self.x-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h)
         elif self.direction == LEFT:
-            image(fire_img, self.x-self.w-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h,200,150,0,0)
+            image(PEW, self.x-self.w-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h,200,150,0,0)
             
         
     def distance(self, target):
@@ -299,20 +303,19 @@ class Fire(Creature):
         
               
 class Doctor(Creature):
-    def __init__(self, x, y, r, g, img, w, h, F,lives,cnt):
+    def __init__(self, x, y, r, g, img, w, h, F, lives, anti_cnt):
         Creature.__init__(self, x, y, r, g, img, w, h, F)
         
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
-        self.shootsound = player.loadFile(path + "/sounds/shoot.mp3")
-        self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
-        self.germCnt = 0
+        # self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
+        self.germ_cnt = 0
         self.lives = lives
         self.vy1 = -0.3
         self.shoot = False
         self.over = 645
         self.xdirection = RIGHT
         self.ydirection = DOWN
-        self.antiCnt = cnt
+        self.anti_cnt = anti_cnt
         
     def update(self):
         global game
@@ -363,18 +366,18 @@ class Doctor(Creature):
         for s in game.antidotes:
             if self.distance(s) <= self.r + s.r:
                 game.antidotes.remove(s)
-                self.antiCnt += 1    
+                self.anti_cnt += 1    
 
         for e in game.germs:
             
             if self.distance(e) <= self.r + e.r:
-                if self.vy > 0 and self.antiCnt>0 and int(game.level)<=2:
+                if self.vy > 0 and self.anti_cnt>0 and int(game.level)<=2:
                     e.lives -= 1
                     if e.lives == 0:
                         game.germs.remove(e)
                         del e
                         self.vy = -2
-                        self.germCnt += 1
+                        self.germ_cnt += 1
                 else:
                     if self.lives > 0:
                         change_level(game.level,self.lives-1,"play")             
@@ -386,11 +389,13 @@ class Doctor(Creature):
                         text("Press anywhere to restart the game.",500,440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
-            level_count[game.level] = self.germCnt
+            level_count[game.level] = self.germ_cnt
+            CP_SOUND.rewind()
+            CP_SOUND.play()
+            
             if int(game.level)<=2:
-                
-                
                 game.gamestate = "info"
+                
             else:
                 printing_score()
                 textSize(50)
@@ -419,7 +424,7 @@ class Platform:
         
     def display(self):
         self.update()
-        image(platformimg, self.x , self.y-game.y_shift, self.w, self.h,self.frame * 1200, 350, (self.frame+1) * 1200, 960)        
+        image(PLATFORMING, self.x , self.y-game.y_shift, self.w, self.h,self.frame * 1200, 350, (self.frame+1) * 1200, 960)        
         
     
 class Checkpoint(Creature):
@@ -428,11 +433,10 @@ class Checkpoint(Creature):
         
     def display(self):
         # if self.y <= 100:
-        image(checkpoint, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
+        image(CHECKPOINT, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
     
             
 class Intro:
-    
     def __init__(self):
         self.cloud = loadImage(path+"/images/cloud.png")
         self.bground = loadImage(path+"/images/intro_background.jpeg")
@@ -441,51 +445,50 @@ class Intro:
         self.play = loadImage(path+"/images/play.png")
         self.quit = loadImage(path+"/images/quit.png")
         self.instructions = loadImage(path+"/images/instructions.png")
-        
-        self.bground_m =  player.loadFile(path + "/sounds/bground.mp3")
 
         self.i = 0
         self.time = 1
         
     def menudisplay(self):
 
-        image(self.bground,0,0,game.w, game.h)
-        image(self.cloud,game.w//1.5,game.h//7,400,328)
-        image(self.intro,game.w//1.5,game.h//2,400,380,800*self.i,0,800*(self.i+1),600)
+        image(self.bground, 0, 0, game.w, game.h)
+        image(self.cloud, game.w // 1.5, game.h // 7, 400, 328)
+        image(self.intro, game.w // 1.5, game.h // 2, 400, 380 , 800 * self.i, 0, 800 * (self.i + 1), 600)
         
         if frameCount % 3 ==0:
-            self.i = (self.i+1)%15
-        image(self.play,240,160,105,60)
-        image(self.quit,240,280,105,60)
-        image(self.instructions,240,400,150,70)
+            self.i = (self.i + 1) % 15
+            
+        image(self.play, 240, 160, 105, 60)
+        image(self.quit, 240, 280, 105, 60)
+        image(self.instructions, 240, 400, 150, 70)
         fill(0)
-        textSize(15)
-        a="Hey! The evil doctor has taken over.\n It's our final opportunity to save the planet.\n Suit up doc!"
-        text(a,game.w//1.5+40,game.h//7+60)
-        fill(255,255,255)
-        # image with greater width and height 
-        if 240<= mouseX <= 240+115 and 160<= mouseY <= 160+70:
-            image(self.play,235,160,115,70)
+        textSize(30)
+        intro_text = "There is a mad scientist who has created Mega-Germs!\nThey have invaded the city! \n You don't know why, but it’s your job \n to protect the city! There is no time left. Suit up."
         
-        elif 240<= mouseX <= 240+115 and 280<= mouseY <= 350:
-            image(self.quit,235,280,115,70)
+        textSize(15)
+        
+        text(intro_text, game.w // 1.5 + 40, game.h // 7 + 60)
+        fill(255, 255, 255)
+        # image with greater width and height 
+        
+        if 240 <= mouseX <= 240 + 115 and 160 <= mouseY <= 160 + 70:
+            image(self.play, 235, 160, 115, 70)
+        
+        elif 240 <= mouseX <= 240 + 115 and 280 <= mouseY <= 350:
+            image(self.quit, 235, 280, 115, 70)
     
-        elif 240<= mouseX <= 240+160 and 400<= mouseY <= 470:
-            image(self.instructions,235,400,160,80)
+        elif 240 <= mouseX <= 240 + 160 and 400 <= mouseY <= 470:
+            image(self.instructions, 235, 400, 160, 80)
     
     def instruction(self):
-        
-        # self.bground_m.play()
-        # self.bground_m.rewind()
-        
-        image(self.inst_bground,0,0)
+        image(self.inst_bground, 0, 0)
         fill(0)
         
-        if 50<= mouseX <= 105 and 635<= mouseY <= 655:
+        if 50 <= mouseX <= 105 and 635 <= mouseY <= 655:
             fill(0)
         else:
-            fill(255,255,255)
-        text("Back",50,650)
+            fill(255, 255, 255)
+        text("Back", 50, 650)
         
         
 intro = Intro()
@@ -563,13 +566,14 @@ def checkpoint_reached():
 def keyPressed():
     if game.speed == 0:
         game.speed = game.speed_temp
+        
     #checking is game is paused
     if keyCode == 32 and game.gamestate == "play": #checks if space bar 
         game.doctor.shoot = True
         game.update()
+        
     if keyCode == 32 and game.gamestate == "info":
         checkpoint_reached()
-        #need to add a function: class is called fire -- call that class fire, creates what is being shot and then change the value of x with right or left direction 
         
     elif keyCode == 80:
         if game.pause:
