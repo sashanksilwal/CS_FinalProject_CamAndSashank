@@ -80,8 +80,8 @@ class Game:
                 self.checkpoint = Checkpoint(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]),int(line[8]))
         
     def update(self):
-        
-        if self.doctor.anti_cnt>0:
+        # this is the action of the doctor shooting that occurs when the space bar is pressed 
+        if self.doctor.anti_cnt > 0:
             self.fires.append(Fire(game.doctor.x, game.doctor.y, 15, game.g, "pew.png", 40, 30, 0))
             self.doctor.anti_cnt -= 1
             SHT_SOUND.rewind()
@@ -89,27 +89,28 @@ class Game:
             
     
     def display(self):
-        
         if self.gamestate == "play":
-
             background(0)
-            if frameRate % 2 == 0:
-                fill(255,0,0)
-            else:
-                fill(255,0,0)
-            rect(0,675,1280,5)
+            
+            # if frameRate % 2 == 0:
+            #     fill(255,0,0)
+            # else:
+            #     fill(255,0,0)
+                
             for p in self.platforms:
                 p.display()
-    
+                
+            self.checkpoint.display()   
+            
+            for a in self.antidotes:
+                a.display()
+            
             for g in self.germs:
                 g.display()
                 
-            for a in self.antidotes:
-                a.display()
-            self.checkpoint.display()   
             self.doctor.display()
             
-            fill(255,255,255)
+            fill(255, 255, 255)
             textSize(20)
             text("Antidotes: " + str(self.doctor.anti_cnt), 1000, 50)
             text("Lives Remaining: " + str(self.doctor.lives), 1000, 80) 
@@ -164,33 +165,33 @@ class Creature:
         self.update()
         fill(255, 255, 255)
         stroke(0, 0, 0)
-        if game.gamestate == "play": # or game.gamestate == "over":
+        
+        if game.gamestate == "play": 
             if self.xdirection == RIGHT:
-                if self.vy !=0:
-                    if self.shoot == True and game.doctor.anti_cnt >0 :
+                if self.vy != 0:
+                    if self.shoot == True and game.doctor.anti_cnt > 0:
                         image(DOC_SHT, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                     else:
                         image(DOC_JMP, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
+                
                 else:
-                    if self.shoot == True and game.doctor.anti_cnt >0:
+                    if self.shoot == True and game.doctor.anti_cnt > 0:
                         image(DOC_SHT, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, self.frame_jump * self.w, 0, (self.frame_jump +1) * 75, self.h)
                     else:
                         image(DOC_RUN, self.x-self.w//2 , self.y -self.h//2 -game.y_shift, self.w, self.h, self.frame * self.w, 0, (self.frame +1) * self.w, self.h)
-                    
-                                    
+                                        
             elif self.xdirection == LEFT:
-                if self.vy !=0:
-                    if self.shoot == True and game.doctor.anti_cnt >0:
-                        image(DOC_SHT, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
+                if self.vy != 0:
+                    if self.shoot == True and game.doctor.anti_cnt > 0:
+                        image(DOC_SHT, self.x -self.w//2, self.y - self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
                     else:
                         image(DOC_JMP, self.x -self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump +1) * 75, 0, self.frame_jump  * self.w, self.h)
                 else:
-                    if self.shoot == True and game.doctor.anti_cnt >0:
+                    if self.shoot == True and game.doctor.anti_cnt > 0:
                         image(DOC_SHT, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
                     else:
                         image(DOC_RUN, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
-                        
-                    
+                            
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
     
@@ -225,8 +226,6 @@ class Germ(Creature):
         self.ydirection = UP # why is this right? 
         
     def update(self):
-        # no gravity, only motion -- polymorphism, so we don't call it here (I don't know how we can make this more beautiful)
-        
         # x movements
         if self.x < self.x1:
             self.xdirection = RIGHT
@@ -254,7 +253,8 @@ class Germ(Creature):
         self.update()
         if game.level == "3" and self.w > 90:
             text("Germ Lives: " + str(self.lives), 50, 50)
-        # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
+            
+        # display germs
         image(germs_imgs[self.img], self.x - self.w//2, self.y - self.h//2 - game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame + 1) * 500, 500)
 
     
@@ -272,19 +272,17 @@ class Fire(Creature):
         elif self.direction == LEFT:
             self.vx = -3
         
-        
     def update(self):    
         self.x += self.vx
         if self.x<0 or self.x>game.w and len(game.fires)>0:
             game.fires.remove(self)
-        # game.y_shift += -0.3
         
+        # checks for conditions of shoot
         for e in game.germs:
-            if self.distance(e) <= self.r + e.r and len(game.fires) >0:
+            if self.distance(e) <= self.r + e.r and len(game.fires) > 0:
                 e.lives -= 1
                 game.fires.remove(self)
-               
-                    
+                
                 if e.lives == 0:
                     game.germs.remove(e)
                     game.doctor.germ_cnt += 1
@@ -292,12 +290,12 @@ class Fire(Creature):
     def display(self):
         self.update()
         
+        # display dependent on the direction of the doctor  
         if self.direction == RIGHT:
             image(PEW, self.x-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h)
         elif self.direction == LEFT:
-            image(PEW, self.x-self.w-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h,200,150,0,0)
+            image(PEW, self.x-self.w-self.w//2, self.y-game.y_shift+5-self.h//2, self.w, self.h, 200, 150, 0, 0)
             
-        
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5 
         
@@ -307,7 +305,6 @@ class Doctor(Creature):
         Creature.__init__(self, x, y, r, g, img, w, h, F)
         
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
-        # self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
         self.germ_cnt = 0
         self.lives = lives
         self.vy1 = -0.3
@@ -319,6 +316,7 @@ class Doctor(Creature):
         
     def update(self):
         global game
+        
         self.gravity()
         if self.keyHandler[LEFT]:
             self.vx = -5
@@ -347,35 +345,37 @@ class Doctor(Creature):
         
         if self.y>self.over:
             if self.lives > 0:
-                change_level(game.level,self.lives-1,"play")
+                change_level(game.level,self.lives-1,  "play")
             else:
                 game.gamestate = "over"
                 printing_score()
-                
-              
-                text("Game Over",500,400)
             
-                text("Press anywhere to restart the game.",500,440)
+                text("Game Over", 500, 400)
+            
+                text("Press anywhere to restart the game.", 500, 440)
     
+        # regular frame rate 
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
             
-        if frameCount %40 == 0 :
+        # jumping frame rate
+        if frameCount % 40 == 0:
             self.frame_jump = (self.frame_jump + 1) % 2
 
-        for s in game.antidotes:
-            if self.distance(s) <= self.r + s.r:
-                game.antidotes.remove(s)
+        # acquire antidote
+        for a in game.antidotes:
+            if self.distance(a) <= self.r + a.r:
+                game.antidotes.remove(a)
                 self.anti_cnt += 1    
 
-        for e in game.germs:
-            
-            if self.distance(e) <= self.r + e.r:
+        # contact with germ: jump - kill, no jump - you lose a life
+        for g in game.germs:
+            if self.distance(g) <= self.r + g.r:
                 if self.vy > 0 and self.anti_cnt>0 and int(game.level)<=2:
-                    e.lives -= 1
-                    if e.lives == 0:
-                        game.germs.remove(e)
-                        del e
+                    g.lives -= 1
+                    if g.lives == 0:
+                        game.germs.remove(g)
+                        del g
                         self.vy = -2
                         self.germ_cnt += 1
                 else:
@@ -384,24 +384,24 @@ class Doctor(Creature):
                     else:
                         game.gamestate = "over"
                         printing_score()
-                        text("Game Over",500,400)
+                        text("Game Over", 500, 400)
                     
-                        text("Press anywhere to restart the game.",500,440)
+                        text("Press anywhere to restart the game.", 500, 440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             level_count[game.level] = self.germ_cnt
             CP_SOUND.rewind()
             CP_SOUND.play()
             
-            if int(game.level)<=2:
+            if int(game.level) <= 2:
                 game.gamestate = "info"
                 
             else:
                 printing_score()
                 textSize(50)
-                text("Completed",500,400)
+                text("Completed", 500, 400)
                 textSize(15)
-                text("Press anywhere to restart",540,430)
+                text("Press anywhere to restart", 540, 430)
             
                 game.gamestate = "over"
 
@@ -461,16 +461,15 @@ class Intro:
         image(self.play, 240, 160, 105, 60)
         image(self.quit, 240, 280, 105, 60)
         image(self.instructions, 240, 400, 150, 70)
+        
         fill(0)
         textSize(30)
-        intro_text = "There is a mad scientist who has created Mega-Germs!\nThey have invaded the city! \n You don't know why, but it’s your job \n to protect the city! There is no time left. Suit up."
-        
-        textSize(15)
+        intro_text = "There is a mad scientist who has created \n Mega-Germs! They have invaded the city! \n You don't know why, but it is your job \n to protect the city! There is no time left. \n Suit up."
         
         text(intro_text, game.w // 1.5 + 40, game.h // 7 + 60)
         fill(255, 255, 255)
-        # image with greater width and height 
         
+        # have the image increase when hovering over the button 
         if 240 <= mouseX <= 240 + 115 and 160 <= mouseY <= 160 + 70:
             image(self.play, 235, 160, 115, 70)
         
@@ -495,15 +494,16 @@ intro = Intro()
 game = Game(1280,720,750,"1",3) 
 
 def printing_score():
+    # this is made a global variable because it changes after each level, it is then emptied after the values have been printed 
     global level_count
     for i, j in level_count.items():
-        fill(80*int(i),230,100)
-        text("Level: "+i+" Germs killed: "+str(j),500,480+int(i)*20)
+        fill(80 * int(i), 230, 100)
+        text("Level: " + i + " Germs killed: " + str(j), 500, 480 + int(i) * 20)
     level_count = {}
-def change_level(level,life,state):
+    
+def change_level(level, life, state):
     global game
-    # del game
-    game = Game(1280,720,750,str(level),life) 
+    game = Game(1280,720,750,str(level), life) 
     game.gamestate = state
     
    
