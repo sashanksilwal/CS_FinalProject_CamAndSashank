@@ -5,27 +5,24 @@ player = Minim(this)
 
 path=os.getcwd()
 
-# loaded the images here because it was lagging when we loaded it inside the class
+#loading the images as it was lagging loading it inside the class
 platformimg = loadImage(path+"/images/platform.png")
 germ = loadImage(path+"/images/germ.png")
 germ1 = loadImage(path+"/images/germ1.png")
-germ2 = loadImage(path+"/images/germ2.png")
-germ3 = loadImage(path+"/images/germ3.png")
+germ2 = loadImage(path+"/images/coin.png")
 villian = loadImage(path + "/images/antagonistic.png")
-# play_bground = loadImage(path+"/images/play_bground.png")
 fire_img = loadImage(path + "/images/pew.png")
 checkpoint = loadImage(path + "/images/checkpoint.png")
 img = loadImage(path + "/images/run.png")
 jmp_img = loadImage(path + "/images/jump.png")
 shoot_img = loadImage(path + "/images/shoot.png")
 antidote_img = loadImage(path+"/images/antidote.png")
+info0 = loadImage(path+"/images/info.jpeg")
+info1 = loadImage(path+"/images/info2.jpeg")
 
-info0 = loadImage(path+"/images/info_level2.png")
-info1 = loadImage(path+"/images/info_level3.png")
-info = []
+info=[]
 info.append(info0)
 info.append(info1)
-
 level_count = {}
 total = 0
 
@@ -33,9 +30,8 @@ germ_img = []
 germ_img.append(germ)
 germ_img.append(germ1)
 germ_img.append(germ2)
-germ_img.append(germ3)
 
-class Game:
+class Game():
     def __init__(self, w, h, g, l,lives):
         self.gamestate= "menu"
         self.shoot_once = True
@@ -63,22 +59,19 @@ class Game:
         else:
             cnt = 5
         self.doctor = Doctor(150,500, 40, self.g, "run.png", 82, 100, 6,lives,cnt)
-        # self.detonator = Detonator(0,1000,20,"cloud.png")
 
         for line in inputFile:
             line = line.strip().split(",")
             if line[0] == "platform":
                 self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), int(line[6])))
             elif line[0] == "germ":
-                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, int(line[5]), int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), float(line[13]), float(line[14]), int(line[15])))
+                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, int(line[5]), int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), float(line[13]), float(line[14]),int(line[15])))
             elif line[0] == "antidotes":
                 self.antidotes.append(Antidote(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8])))
             elif line[0] == "speed":
                 self.speed_temp = float(line[1])
             elif line[0] == "checkpoint":
                 self.checkpoint = Checkpoint(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]),int(line[8]))
-            # elif line[0] == "villian":
-            #     self.villians = Villian(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]),int(line[8]))
         
     def update(self):
         
@@ -92,7 +85,7 @@ class Game:
     def display(self):
         
         if self.gamestate == "play":
-            # image(play_bground,0,0,game.w, game.h)
+
             background(0)
             if frameRate % 2 == 0:
                 fill(255,0,0)
@@ -112,12 +105,9 @@ class Game:
             
             fill(255,255,255)
             textSize(20)
-            # self.a += 1
-            # print(self.a)
             text("Antidotes: " + str(self.doctor.antiCnt), 1000, 50)
             text("Lives Remaining: " + str(self.doctor.lives), 1000, 80) 
             text("Germs Killed: " + str(self.doctor.germCnt), 1000, 110) 
-            # self.fire = Fire(game.doctor.x, game.doctor.y, 50, game.g, "pew.png", 40, 30, 0)
 
             for f in self.fires:
                 f.display()
@@ -260,23 +250,7 @@ class Germ(Creature):
             text("Germ Lives: "+str(self.lives),50,50)
         # image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
         image(germ_img[self.img], self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
-        # image(self.img, self.x-self.w//2 , self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame+1) * 500, 0, (self.frame +1) * 500, 500)
-        
-# class Villian(Germ):
-#     def __init__(self, x, y, r, g, img, w, h, f, x1, y1, x2, y2, xspeed, yspeed, lives):
-#         Germ.__init__(self, x, y, r, g, img, w, h, f, x1, y1, x2, y2, xspeed, yspeed)
-#         self.lives = lives
-        
-#     def update(self):
-#         if self.distance <= game.doctor.r + self.r:
-#             self.lives -= 1
-    
-#     def display(self):
-#         # if self.lives == 0:
-#             # end game
-#         self.update()
-#         image(villian, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame+1) * 500, 500)
-        
+
     
 class Fire(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
@@ -288,9 +262,9 @@ class Fire(Creature):
             self.direction = LEFT
             
         if self.direction == RIGHT:
-            self.vx = 6
+            self.vx = 3
         elif self.direction == LEFT:
-            self.vx = -6
+            self.vx = -3
         
         
     def update(self):    
@@ -300,15 +274,15 @@ class Fire(Creature):
         # game.y_shift += -0.3
         
         for e in game.germs:
-            if self.distance(e) <= self.r + e.r and len(game.fires) > 0:
+            if self.distance(e) <= self.r + e.r and len(game.fires) >0:
                 e.lives -= 1
                 game.fires.remove(self)
+               
                     
                 if e.lives == 0:
                     game.germs.remove(e)
                     game.doctor.germCnt += 1
                     
-    
     def display(self):
         self.update()
         
@@ -328,7 +302,7 @@ class Doctor(Creature):
         
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
         self.shootsound = player.loadFile(path + "/sounds/shoot.mp3")
-        self.inst_bground = loadImage(path+"/images/instructions_bg.png")
+        self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
         self.germCnt = 0
         self.lives = lives
         self.vy1 = -0.3
@@ -366,13 +340,12 @@ class Doctor(Creature):
         game.y_shift += -game.speed
         self.over += -game.speed
         
-        if self.y > self.over:
+        if self.y>self.over:
             if self.lives > 0:
                 change_level(game.level,self.lives-1,"play")
             else:
                 game.gamestate = "over"
-                for i, j in level_count.items():
-                    text("Level: "+i+" Germs killed: "+str(j),500,280+int(i)*20)
+                printing_score()
                 
               
                 text("Game Over",500,400)
@@ -401,32 +374,28 @@ class Doctor(Creature):
                         self.germCnt += 1
                 else:
                     if self.lives > 0:
-                        change_level(game.level,self.lives-1,"play")             #work left
+                        change_level(game.level,self.lives-1,"play")             
                     else:
                         game.gamestate = "over"
-                        for i, j in level_count.items():
-                            text("Level: "+i+" Germs killed: "+str(j),500,320+int(i)*20)
+                        printing_score()
                         text("Game Over",500,400)
                         text("Press anywhere to restart the game.",500,440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             level_count[game.level] = self.germCnt
             if int(game.level)<=2:
-                game.gamestate = "info"
                 
+                
+                game.gamestate = "info"
             else:
-                for i, j in level_count.items():
-                    text("Level: "+i+" Germs killed: "+str(j),500,180+int(i)*20)
+                printing_score()
                 textSize(50)
                 text("Completed",500,300)
                 textSize(15)
                 text("Press anywhere to restart",540,330)
             
                 game.gamestate = "over"
-            # game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives) 
-            
-            # game.gamestate = "play"
-                
+
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
         
@@ -437,7 +406,6 @@ class Platform:
         self.y = y
         self.w = w
         self.h = h
-        # self.img = loadImage(path+"/images/"+img)
         self.frame = 0
         self.slice = slice
     
@@ -447,7 +415,6 @@ class Platform:
         
     def display(self):
         self.update()
-        # rect(self.x , self.y-game.y_shift, self.w, self.h)
         image(platformimg, self.x , self.y-game.y_shift, self.w, self.h,self.frame * 1200, 350, (self.frame+1) * 1200, 960)        
         
     
@@ -458,27 +425,6 @@ class Checkpoint(Creature):
     def display(self):
         # if self.y <= 100:
         image(checkpoint, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
-
-
-# class Detonator(Creature):
-#     def __init__(self, x, y, r,  img):
-#         # Creature.__init__(self, x, y, r, g, img, w, h, F)
-#         pass
-    
-#     def display(self):
-#         # if self.y <= 100:
-#         image(self.img, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
-        
-        
-# class LevelChange():
-#     def __init__(self):
-#         self.intro = loadImage(path+"/images/instructions_bground.jpeg")
-#         image(self.intro,0,0)
-#         self.display()
-        
-#     def display(self):
-        
-#         time.sleep(5)    
     
             
 class Intro:
@@ -487,7 +433,6 @@ class Intro:
         self.cloud = loadImage(path+"/images/cloud.png")
         self.bground = loadImage(path+"/images/intro_background.jpeg")
         self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
-        # self.game_bground  = loadImage(path+"/images/play_bground.jpg")
         self.intro = loadImage(path+"/images/intro.png")
         self.play = loadImage(path+"/images/play.png")
         self.quit = loadImage(path+"/images/quit.png")
@@ -502,12 +447,10 @@ class Intro:
 
         image(self.bground,0,0,game.w, game.h)
         image(self.cloud,game.w//1.5,game.h//7,400,328)
-        # image(self.play,100,210,300,200)
         image(self.intro,game.w//1.5,game.h//2,400,380,800*self.i,0,800*(self.i+1),600)
         
         if frameCount % 3 ==0:
             self.i = (self.i+1)%15
-        # print(mouseX,mouseY)
         image(self.play,240,160,105,60)
         image(self.quit,240,280,105,60)
         image(self.instructions,240,400,150,70)
@@ -544,6 +487,10 @@ class Intro:
 intro = Intro()
 game = Game(1280,720,650,"1",3) 
 
+def printing_score():
+    for i, j in level_count.items():
+        fill(80*int(i),230,100)
+        text("Level: "+i+" Germs killed: "+str(j),500,480+int(i)*20)
 
 def change_level(level,life,state):
     global game
@@ -605,7 +552,7 @@ def keyReleased():
 def checkpoint_reached():
     global game
     
-    game = Game(1280,720,650, str (int(game.level)+1), game.doctor.lives)     
+    game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives)     
     game.gamestate = "play"       
     
 def keyPressed():
