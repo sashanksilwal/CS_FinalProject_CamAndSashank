@@ -5,11 +5,12 @@ player = Minim(this)
 
 path=os.getcwd()
 
-#loading the images as it was lagging loading it inside the class
+# loaded the images here because it was lagging when we loaded it inside the class
 platformimg = loadImage(path+"/images/platform.png")
 germ = loadImage(path+"/images/germ.png")
 germ1 = loadImage(path+"/images/germ1.png")
-germ2 = loadImage(path+"/images/coin.png")
+germ2 = loadImage(path+"/images/germ2.png")
+germ3 = loadImage(path+"/images/germ3.png")
 villian = loadImage(path + "/images/antagonistic.png")
 # play_bground = loadImage(path+"/images/play_bground.png")
 fire_img = loadImage(path + "/images/pew.png")
@@ -18,11 +19,13 @@ img = loadImage(path + "/images/run.png")
 jmp_img = loadImage(path + "/images/jump.png")
 shoot_img = loadImage(path + "/images/shoot.png")
 antidote_img = loadImage(path+"/images/antidote.png")
-info0 = loadImage(path+"/images/info.jpeg")
-info1 = loadImage(path+"/images/info2.jpeg")
-info=[]
+
+info0 = loadImage(path+"/images/info_level2.png")
+info1 = loadImage(path+"/images/info_level3.png")
+info = []
 info.append(info0)
 info.append(info1)
+
 level_count = {}
 total = 0
 
@@ -30,7 +33,9 @@ germ_img = []
 germ_img.append(germ)
 germ_img.append(germ1)
 germ_img.append(germ2)
-class Game():
+germ_img.append(germ3)
+
+class Game:
     def __init__(self, w, h, g, l,lives):
         self.gamestate= "menu"
         self.shoot_once = True
@@ -65,7 +70,7 @@ class Game():
             if line[0] == "platform":
                 self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), int(line[6])))
             elif line[0] == "germ":
-                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, int(line[5]), int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), float(line[13]), float(line[14]),int(line[15])))
+                self.germs.append(Germ(int(line[1]),int(line[2]), int(line[3]), self.g, int(line[5]), int(line[6]), int(line[7]), int(line[8]), int(line[9]), int(line[10]), int(line[11]), int(line[12]), float(line[13]), float(line[14]), int(line[15])))
             elif line[0] == "antidotes":
                 self.antidotes.append(Antidote(int(line[1]),int(line[2]), int(line[3]), self.g, line[5], int(line[6]), int(line[7]), int(line[8])))
             elif line[0] == "speed":
@@ -283,9 +288,9 @@ class Fire(Creature):
             self.direction = LEFT
             
         if self.direction == RIGHT:
-            self.vx = 3
+            self.vx = 6
         elif self.direction == LEFT:
-            self.vx = -3
+            self.vx = -6
         
         
     def update(self):    
@@ -295,17 +300,15 @@ class Fire(Creature):
         # game.y_shift += -0.3
         
         for e in game.germs:
-            if self.distance(e) <= self.r + e.r and len(game.fires) >0:
+            if self.distance(e) <= self.r + e.r and len(game.fires) > 0:
                 e.lives -= 1
                 game.fires.remove(self)
-               
                     
                 if e.lives == 0:
                     game.germs.remove(e)
                     game.doctor.germCnt += 1
                     
-        
-        
+    
     def display(self):
         self.update()
         
@@ -325,7 +328,7 @@ class Doctor(Creature):
         
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
         self.shootsound = player.loadFile(path + "/sounds/shoot.mp3")
-        self.inst_bground = loadImage(path+"/images/instructions_bground.jpeg")
+        self.inst_bground = loadImage(path+"/images/instructions_bg.png")
         self.germCnt = 0
         self.lives = lives
         self.vy1 = -0.3
@@ -363,7 +366,7 @@ class Doctor(Creature):
         game.y_shift += -game.speed
         self.over += -game.speed
         
-        if self.y>self.over:
+        if self.y > self.over:
             if self.lives > 0:
                 change_level(game.level,self.lives-1,"play")
             else:
@@ -409,9 +412,8 @@ class Doctor(Creature):
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             level_count[game.level] = self.germCnt
             if int(game.level)<=2:
-                
-                
                 game.gamestate = "info"
+                
             else:
                 for i, j in level_count.items():
                     text("Level: "+i+" Germs killed: "+str(j),500,180+int(i)*20)
@@ -603,7 +605,7 @@ def keyReleased():
 def checkpoint_reached():
     global game
     
-    game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives)     
+    game = Game(1280,720,650, str (int(game.level)+1), game.doctor.lives)     
     game.gamestate = "play"       
     
 def keyPressed():
