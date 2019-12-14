@@ -385,7 +385,6 @@ class Doctor(Creature):
                         game.gamestate = "over"
                         printing_score()
                         text("Game Over", 500, 400)
-                    
                         text("Press anywhere to restart the game.", 500, 440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
@@ -463,7 +462,7 @@ class Intro:
         image(self.instructions, 240, 400, 150, 70)
         
         fill(0)
-        textSize(30)
+        textSize(15)
         intro_text = "There is a mad scientist who has created \n Mega-Germs! They have invaded the city! \n You don't know why, but it is your job \n to protect the city! There is no time left. \n Suit up."
         
         text(intro_text, game.w // 1.5 + 40, game.h // 7 + 60)
