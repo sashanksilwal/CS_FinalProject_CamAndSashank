@@ -9,19 +9,19 @@ PLATFORMING = loadImage(path + "/images/platform.png")
 CHECKPOINT = loadImage(path + "/images/checkpoint.png")
 ANTIDOTE = loadImage(path + "/images/antidote.png")
 
-DOC_RUN = loadImage(path + "/images/run.png")
+DOC_RUN = loadImage(path + "/images/run.png")                     #images for the doctor
 DOC_JMP = loadImage(path + "/images/jump.png")
 DOC_SHT = loadImage(path + "/images/shoot.png")
-
-INFO_0 = loadImage(path + "/images/info_level2.png")
+ 
+INFO_0 = loadImage(path + "/images/info_level2.png")              #images for the info page inbetween levels
 INFO_1 = loadImage(path + "/images/info_level3.png")
 
-GERM_0 = loadImage(path + "/images/germ0.png")
+GERM_0 = loadImage(path + "/images/germ0.png")                    #images for the germs
 GERM_1 = loadImage(path + "/images/germ1.png")
 GERM_2 = loadImage(path + "/images/germ2.png")
 GERM_3 = loadImage(path + "/images/germ3.png")
 
-PEW = loadImage(path + "/images/pew.png")
+PEW = loadImage(path + "/images/pew.png")                         #image for the fire 
 
 info = []
 info.append(INFO_0)
@@ -34,11 +34,12 @@ germs_imgs.append(GERM_1)
 germs_imgs.append(GERM_2)
 germs_imgs.append(GERM_3)
 
-SHT_SOUND = player.loadFile(path + "/sounds/shoot.mp3")
-CP_SOUND = player.loadFile(path + "/sounds/checkpoint.mp3")
+SHT_SOUND = player.loadFile(path + "/sounds/shoot.mp3")              #importing shoot sound 
+CP_SOUND = player.loadFile(path + "/sounds/checkpoint.mp3")          #importing sheckpoint sound
 
 
-class Game:
+#the main class which contains all the other objects
+class Game:                                
     def __init__(self, w, h, g, l, lives):
         self.gamestate = "menu"
         self.shoot_once = True
@@ -65,8 +66,9 @@ class Game:
             anti_cnt = 5
             
         self.doctor = Doctor(150, 500, 40, self.g, "run.png", 82, 100, 6, lives, anti_cnt)
-
-        for line in inputFile:
+        
+        #taking the values from the csv file
+        for line in inputFile: 
             line = line.strip().split(",")
             if line[0] == "platform":
                 self.platforms.append(Platform(int(line[1]),int(line[2]), int(line[3]), int(line[4]), int(line[6])))
@@ -87,7 +89,8 @@ class Game:
             SHT_SOUND.rewind()
             SHT_SOUND.play()
             
-    
+            
+    #displaying all the entities of the game
     def display(self):
         if self.gamestate == "play":
             background(0)
@@ -119,11 +122,12 @@ class Game:
 
             for f in self.fires:
                 f.display()
+                
         if self.gamestate == "info":
             image(info[int(game.level)-1],0,0)
         
                 
-
+#creature class that is parent class for germ and doctor
 class Creature:
     
     def __init__(self, x, y, r, g, img, w, h, slices):
@@ -141,7 +145,8 @@ class Creature:
         self.frame_jump = 0
         self.xdirection = RIGHT
         self.ydirection = DOWN
-    
+ 
+    #gravity for the objects to move down  
     def gravity(self):
         if self.y + self.r >= self.g:
             self.vy = 0
@@ -167,6 +172,7 @@ class Creature:
         fill(255, 255, 255)
         stroke(0, 0, 0)
         
+        #displaying the main character 
         if game.gamestate == "play": 
             if self.xdirection == RIGHT:
                 if self.vy != 0:
@@ -192,11 +198,13 @@ class Creature:
                         image(DOC_SHT, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame_jump + 1)* self.w, 0, self.frame_jump * self.w, self.h)
                     else:
                         image(DOC_RUN, self.x-self.w//2, self.y -self.h//2-game.y_shift, self.w, self.h, (self.frame + 1)* self.w, 0, self.frame * self.w, self.h)
-                            
+     
+     #calculating the distance between two objects                       
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
     
-    
+
+#class that contains antidote    
 class Antidote(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
@@ -206,11 +214,13 @@ class Antidote(Creature):
         if frameCount % 20 == 0:
             self.frame = (self.frame + 1) % 5
     
+    #displaying the antidote
     def display(self):
         self.update()
         image(ANTIDOTE,self.x-self.w//2,self.y-game.y_shift-self.h//2,self.w, self.h,self.frame * 250, 0, (self.frame+1) * 250, 250)
         
-        
+
+#class that contains all the villan germs        
 class Germ(Creature):
     def __init__(self, x, y, r, g, img, w, h, f, x1, y1, x2, y2, xspeed,yspeed,lives):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
@@ -252,13 +262,15 @@ class Germ(Creature):
         
     def display(self):
         self.update()
+        #checking for the final villan
         if game.level == "3" and self.w > 90:
             text("Germ Lives: " + str(self.lives), 50, 50)
             
         # display germs
         image(germs_imgs[self.img], self.x - self.w//2, self.y - self.h//2 - game.y_shift, self.w, self.h, self.frame * 500, 0, (self.frame + 1) * 500, 500)
 
-    
+
+#class that contains the fire shot by the doctor    
 class Fire(Creature):
     def __init__(self, x, y, r, g, img, w, h, f):
         Creature.__init__(self, x, y, r, g, img, w, h, f)
@@ -305,6 +317,7 @@ class Doctor(Creature):
     def __init__(self, x, y, r, g, img, w, h, F, lives, anti_cnt):
         Creature.__init__(self, x, y, r, g, img, w, h, F)
         
+        #variable to check the motion of the doctor
         self.keyHandler={LEFT:False, RIGHT:False, UP:False}
         self.germ_cnt = 0
         self.lives = lives
@@ -314,7 +327,8 @@ class Doctor(Creature):
         self.xdirection = RIGHT
         self.ydirection = DOWN
         self.anti_cnt = anti_cnt
-        
+    
+        #updating the motion of the doctor    
     def update(self):
         global game
         
@@ -355,7 +369,7 @@ class Doctor(Creature):
             
                 text("Press anywhere to restart the game.", 500, 440)
     
-        # regular frame rate 
+        # regular motion frame rate 
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
             self.frame = (self.frame + 1) % self.slices
             
@@ -387,7 +401,8 @@ class Doctor(Creature):
                         printing_score()
                         text("Game Over", 500, 400)
                         text("Press anywhere to restart the game.", 500, 440)
-                    
+         
+         #checking if checkpoint reached           
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
             level_count[game.level] = self.germ_cnt
             CP_SOUND.rewind()
@@ -405,10 +420,12 @@ class Doctor(Creature):
             
                 game.gamestate = "over"
 
+    #calculating the distance between two objects
     def distance(self, target):
         return ((self.x - target.x)**2 + (self.y - target.y)**2)**0.5
         
 
+#class that contains the platforms
 class Platform:
     def __init__(self,x,y, w, h, slice):
         self.x = x
@@ -435,7 +452,8 @@ class Checkpoint(Creature):
         # if self.y <= 100:
         image(CHECKPOINT, self.x -self.w//2, self.y-game.y_shift-self.h//2, self.w, self.h)
     
-            
+
+#class for the menu page            
 class Intro:
     def __init__(self):
         self.cloud = loadImage(path+"/images/cloud.png")
@@ -448,7 +466,8 @@ class Intro:
 
         self.i = 0
         self.time = 1
-        
+     
+    #displaying the menu   
     def menudisplay(self):
 
         image(self.bground, 0, 0, game.w, game.h)
@@ -479,6 +498,7 @@ class Intro:
         elif 240 <= mouseX <= 240 + 160 and 400 <= mouseY <= 470:
             image(self.instructions, 235, 400, 160, 80)
     
+    #displaying the instructions
     def instruction(self):
         image(self.inst_bground, 0, 0)
         fill(0)
@@ -491,10 +511,10 @@ class Intro:
         text("Back", 50, 660)
         
         
-intro = Intro()
-game = Game(1280,720,750,"1",3) 
+intro = Intro()                         #initiliasing the intro, for the introduction menu
+game = Game(1280,720,750,"1",3)         #initialising the game
 
-def printing_score():
+def printing_score():                   #function to print the score
     # this is made a global variable because it changes after each level, it is then emptied after the values have been printed 
     global level_count
     for i, j in level_count.items():
@@ -502,7 +522,7 @@ def printing_score():
         text("Level: " + i + " Germs killed: " + str(j), 500, 480 + int(i) * 20)
     level_count = {}
     
-def change_level(level, life, state):
+def change_level(level, life, state):    #function to change the level
     global game
     game = Game(1280,720,750,str(level), life) 
     game.gamestate = state
