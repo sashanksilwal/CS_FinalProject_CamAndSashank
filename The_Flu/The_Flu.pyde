@@ -9,7 +9,8 @@ path=os.getcwd()
 platformimg = loadImage(path+"/images/platform.png")
 germ = loadImage(path+"/images/germ.png")
 germ1 = loadImage(path+"/images/germ1.png")
-germ2 = loadImage(path+"/images/coin.png")
+germ2 = loadImage(path+"/images/germ2.png")
+germ3 = loadImage(path+"/images/germ3.png")
 villian = loadImage(path + "/images/antagonistic.png")
 fire_img = loadImage(path + "/images/pew.png")
 checkpoint = loadImage(path + "/images/checkpoint.png")
@@ -17,8 +18,8 @@ img = loadImage(path + "/images/run.png")
 jmp_img = loadImage(path + "/images/jump.png")
 shoot_img = loadImage(path + "/images/shoot.png")
 antidote_img = loadImage(path+"/images/antidote.png")
-info0 = loadImage(path+"/images/info.jpeg")
-info1 = loadImage(path+"/images/info2.jpeg")
+info0 = loadImage(path+"/images/info_level2.png")
+info1 = loadImage(path+"/images/info_level3.png")
 
 info=[]
 info.append(info0)
@@ -30,6 +31,7 @@ germ_img = []
 germ_img.append(germ)
 germ_img.append(germ1)
 germ_img.append(germ2)
+germ_img.append(germ3)
 
 class Game():
     def __init__(self, w, h, g, l,lives):
@@ -43,7 +45,7 @@ class Game():
         self.pause = False
         self.y_shift = 0
         self.level = l
-        
+        self.speed_temp = 0
         self.speed = 0
         inputFile = open(path+"/level"+l+".csv","r")
         
@@ -349,6 +351,7 @@ class Doctor(Creature):
                 
               
                 text("Game Over",500,400)
+            
                 text("Press anywhere to restart the game.",500,440)
     
         if frameCount % 6 == 0 and self.vx != 0 and self.vy == 0:
@@ -379,6 +382,7 @@ class Doctor(Creature):
                         game.gamestate = "over"
                         printing_score()
                         text("Game Over",500,400)
+                    
                         text("Press anywhere to restart the game.",500,440)
                     
         if self.distance(game.checkpoint) <= self.r + game.checkpoint.r:
@@ -390,9 +394,9 @@ class Doctor(Creature):
             else:
                 printing_score()
                 textSize(50)
-                text("Completed",500,300)
+                text("Completed",500,400)
                 textSize(15)
-                text("Press anywhere to restart",540,330)
+                text("Press anywhere to restart",540,430)
             
                 game.gamestate = "over"
 
@@ -485,17 +489,18 @@ class Intro:
         
         
 intro = Intro()
-game = Game(1280,720,650,"1",3) 
+game = Game(1280,720,750,"1",3) 
 
 def printing_score():
+    global level_count
     for i, j in level_count.items():
         fill(80*int(i),230,100)
         text("Level: "+i+" Germs killed: "+str(j),500,480+int(i)*20)
-
+    level_count = {}
 def change_level(level,life,state):
     global game
     # del game
-    game = Game(1280,720,650,str(level),life) 
+    game = Game(1280,720,750,str(level),life) 
     game.gamestate = state
     
    
@@ -552,7 +557,7 @@ def keyReleased():
 def checkpoint_reached():
     global game
     
-    game = Game(1280,720,650,str(int(game.level)+1),game.doctor.lives)     
+    game = Game(1280,720,750,str(int(game.level)+1),game.doctor.lives)     
     game.gamestate = "play"       
     
 def keyPressed():
